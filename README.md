@@ -1,6 +1,6 @@
 # GESISSpringSeminar23
 
-This repository contains the accompanying code to the course "Comparative Social Research with Multi-Group SEM" for the GESIS Spring Seminar 2023.
+This repository contains the accompanying code to the course "Comparative Social Research with Multi-Group SEM" for the GESIS Spring Seminar 2023 by Daniel Seddig, Eldad Davidov, Peter Schmidt and Yannick Diehl.
 
 ## Course Discription
 
