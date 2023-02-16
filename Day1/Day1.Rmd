@@ -26,6 +26,7 @@ knitr::opts_chunk$set(comment = "")
 ```{r setup, results='hide', message=F, warning=F}
 # basic tools 
 library(tidyverse)
+library(sjmisc)
 
 # checking data
 library(MVN)
@@ -110,7 +111,21 @@ Step 8: Identifying the mean structure (optional)
 
 ### Step 1
 
-?!
+Our example measurement model Universalism comes from the Theory of Basic Human Values according to Schwartz (1992) and comprises three facets - Concern, Nature, Tolerance.
+
+Concern: Commitment to equality, justice and protection for all people
+
+Nature: Preservation of the natural environment
+
+Tolerance: Acceptance and understanding of those who are different from oneself
+
+In order to measure this attitude construct, three questions (items) were created in ESS 7 (2014) and queried in various countries (e.g. Czech Republic, Germany, Great Britain).
+
+| Name    | Label                                                                  | Construct    |
+|---------|------------------------------------------------------------------------|--------------|
+| ipeqopt | Important that people are treated equally and have equal opportunities | Universalism |
+| ipudrst | Important to understand different people                               | Universalism |
+| impenv  | Important to care for nature and environment                           | Universalism |
 
 ### Step 2
 
@@ -154,7 +169,7 @@ The syntax commands for specifying a lavaan model:
 universalism <- "uni =~ ipeqopt + ipudrst + impenv"
 ```
 
-Lavaan automatically uses the Reference indicator method, so one indicator's factual loading is fixed at 1. Accordingly, the variance of the latent factor is estimated.
+Lavaan automatically uses the reference indicator method, so one indicator's factual loading is fixed at 1. Accordingly, the variance of the latent factor is estimated.
 
 ```{r, echo=F, fig.align='center'}
 cfa(
@@ -203,7 +218,7 @@ cfa(
   )
 ```
 
-This requires the use of labels, i.e. the labeling of individual parameters in order to be able to control them directly. The syntax commands for labeling a lavaan model can be found here: <https://lavaan.ugent.be/tutorial/syntax2.html>. We just need to understand how parameters are fixed in Lavaan and how they can be calculated freely.
+This requires the use of labels, i.e. the labeling of individual parameters in order to be able to control them directly. The syntax commands for labeling a lavaan model can be found here: <https://lavaan.ugent.be/tutorial/syntax2.html>. For this step, we only need to understand how individual parameters can be fixed and freely calculated. As soon as it comes to the calculation of measurement invariance, we will work with labels again. But more on that later.
 
 Reference indicator method:
 
@@ -237,6 +252,379 @@ ESS07 %>%
   export_table(table_width = 1, digits = 3)
 ```
 
+This shows that the individual variables are not normally distributed and that there is no multivariate normal distribution (Henze-Zirkler value). So, we don't have any missing values in our example dataset and a more than sufficient sample size. In addition, the variables show a right skewed distribution and a moderate variance.
+
+Due to the missing multivariate normal distribution, we use the MLR estimator. If we were dealing with missing values, we would use Full Information Maximum Likelihood (FIML) as the estimation strategy.
+
+### Step 5
+
+Now let's estimate the model using Lavaan. For this we use the cfa() function.
+
+```{r}
+universalism_fit <- cfa(
+  model = "Universalism =~ ipeqopt + ipudrst + impenv",
+  data = ESS07,
+  estimator = "MLR",
+  # optional if there are missing values 
+  missing = "fiml.x"
+)
+```
+
+Now we can look at the estimated model. To do this, we use the summary() function. 
+
+Fit.measures = T shows us the most important fit measurements of our model and thus the fit to the data. 
+Standardized = T shows us standardized values in the output and rsquare shows us the explained variance of the dependent variable.
+
+```{r}
+summary(
+  object = universalism_fit,
+  fit.measures = T,
+  standardized = T,
+  rsquare = T
+)
+```
+
+Since we estimated a model with three indicators, it is a saturated model, i.e. a model identified with 0 degrees of freedom.
+
+This allows the following graphic to be created with standardized factor loadings.
+
+```{r, fig.align='center', results='hide'}
+universalism_plot <- universalism_fit %>% 
+  semPaths(
+    whatLabels = "std", 
+    style = "mx", 
+    layout = "tree", 
+    edge.color = "black", 
+    intercepts = F, 
+    nCharNodes = 50
+  ) 
+```
+
+The semptools package also allows us to easily add additional information to our graphics ( https://cran.r-project.org/web/packages/semptools/vignettes/semptools.html). Here I have also included the degree of statistical significance.
+
+```{r, fig.align='center'}
+universalism_plot %>% 
+  mark_sig(universalism_fit) %>% 
+  plot()
+```
+
+### Step 6:
+
+A look at the fit measures shows us that the model is saturated due to the 0 degrees of freedom and thus achieves a perfect data fit.
+
+### Step 7:
+
+In the following we want to check whether the selected items represent a factor. It can be seen that the factor loadings all reach the cut off of >= 0.4 and thus, in combination with the fit indices, there is an appropriate measurement model.
+
+If there are recognizable misfits, we can access the modification indices.
+
+Modification indices (MIs) = Approximation of the reduction of X2 if a single constrained parameter is freely estimated
+
+Constrained parameters in CFA: 
+- Factor cross-loadings
+- Residual correlations
+
+--> Test of local fit
+--> One parameter at a time
+
+```{r}
+universalism_fit %>% 
+  modificationindices(standardized = T, sort. = T)
+```
+
+Accordingly, there are no modification options, since the model has just been identified and no degrees of freedom are available.
+
+So let's look at two more models of Theory of Basic Human Values from the ESS07.
+
+## CFA model of Tradition/Conformity
+
+### Step 1:
+
+| Name    | Label                                                 | Construct    |
+|---------|-------------------------------------------------------|--------------|
+| ipmodst | Important to be humble and modest, not draw attention | Tradition    |
+| imptrad | Important to follow traditions and customs            | Tradition    |
+| ipfrule | Important to care for nature and environment          | Conformity   |
+| ipbhprp | Important to behave properly                          | Conformity   |
+
+### Step 2:
+
+Indicators are “effects” of the latent variable and therefore we specify a reflective measurement model.
+
+### Step 3:
+
+We use the reference indicator method again to calculate the model.
+
+### Step 4:
+
+```{r}
+ESS07 %>% 
+  select(ipmodst, imptrad, ipfrule, ipbhprp) %>% 
+  mvn() %>% 
+  # optional
+  export_table(table_width = 1, digits = 3)
+```
+
+The variables are scaled metrically on a scale from 0 to 6 and distributed skewed to the right. In addition, there is neither a univariate nor a multivariate normal distribution.
+
+### Step 5:
+
+```{r}
+tradition_conformity_fit <- cfa(
+  model = "TraditionConformity =~ ipmodst + imptrad + ipfrule + ipbhprp",
+  data = ESS07,
+  estimator = "MLR",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = tradition_conformity_fit,
+  fit.measures = T,
+  standardized = T,
+  rsquare = T
+)
+```
+
+The model is identified with two degrees of freedom.
+
+### Step 6:
+
+The fit indices show a good fit to the data. All fit indices are below their cut offs.
+
+### Step 7:
+
+In this model, the factor loading of the item ipmodst is clearly misfit, since the factor loading cut-off of 0.4 is not reached.
+
+Here it has to be considered whether the item has a value for the construct or whether the item has to be removed from the measurement model. We decide to take it out.
+
+Further modifications are not necessary since the model shows a very good fit to the data.
+
+```{r}
+tradition_conformity_fit2 <- cfa(
+  model = "TraditionConformity =~ imptrad + ipfrule + ipbhprp",
+  data = ESS07,
+  estimator = "MLR",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = tradition_conformity_fit2,
+  fit.measures = T,
+  standardized = T,
+  rsquare = T
+)
+```
+
+This makes the measurement model suitable for further use.
+
+## CFA model Perceived Threat
+
+### Step 1:
+
+| Name    | Label                                                                | Construct        |
+|---------|----------------------------------------------------------------------|------------------|
+| imbgeco | Immigration bad or good for country's economy                        | Perceived threat |
+| imueclt | Country's cultural life undermined or enriched by immigrants         | Perceived threat |
+| imtcjob | Immigrants take jobs away in country or create new jobs              | Perceived threat |
+| rlgueim | Religious beliefs and practices undermined or enriched by immigrants | Perceived threat |
+
+### Step 2:
+
+Indicators are “effects” of the latent variable and therefore we specify a reflective measurement model
+
+### Step 3:
+
+We use the reference indicator method again to calculate the model.
+
+### Step 4:
+
+```{r}
+ESS07 %>%
+  select(imbgeco, imueclt, imtcjob, rlgueim) %>%
+  mvn() %>%
+  # optional for better display 
+  export_table(table_width = 1, digits = 3)
+```
+
+The variables are scaled metrically on a scale from 0 to 10. Nevertheless, there is neither a univariate nor a multivariate normal distribution.
+
+### Step 5:
+
+```{r}
+perceived_threat_fit <- cfa(
+  model = "PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim",
+  data = ESS07,
+  estimator = "MLR",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = perceived_threat_fit,
+  fit.measures = T,
+  standardized = T,
+  rsquare = T
+)
+```
+
+The model is identified with two degrees of freedom.
+
+### Step 6:
+
+The model shows a clear misspecification of the model for the RMSEA indice.
+
+### Step 7:
+
+The factor loadings all show sufficient loading. So we can immediately devote ourselves to the modification indices in order to understand the misspecification evident in the RMSEA.
+
+```{r}
+perceived_threat_fit %>% 
+  modificationindices(standardized = T, sort. = T)
+```
+
+The modification indices tell us that adjusting the residual covariance between items imueclt and rlgueim would have the largest effect on model fitting (in terms of the chi-square test statistic).
+
+This is because some of the covariation of imueclt and rlgueim is due to sources other than the common factor.
+
+Reasons: method effects, item wording, acquiescence, social desirability, unaccounted theoretical common causes.
+
+We then modify our initial model and remove the residual covariance constraint between the two items, which is fixed at 0, and let it calculate freely.
+
+```{r}
+perceived_threat_fit2 <- cfa(
+  model = "
+  PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+  
+  imueclt	~~	rlgueim
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = perceived_threat_fit2,
+  fit.measures = T,
+  standardized = T,
+  rsquare = T
+)
+```
+
+```{r, fig.align='center'}
+perceived_threat_fit2 %>% 
+  semPaths(
+    whatLabels = "std", 
+    style = "mx", 
+    layout = "tree", 
+    edge.color = "black", 
+    intercepts = F, 
+    nCharNodes = 50
+  ) 
+```
+
+
+The RMSEA is then back in our anticipated cut-off area and we can continue working with the measurement model.
+
+### Step 8:
+
+Finally, we want to display the mean structure of our model.
+
+In practice, the only reason why a user would add intercept-formulas in the model syntax is because some constraints must be specified on them.
+
+```{r}
+perceived_threat_mean <- cfa(
+  model = "
+  PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+  
+  imueclt	~~	rlgueim
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  # optional if there are missing values
+  missing = "fiml.x",
+  meanstructure = T
+)
+```
+
+```{r}
+summary(
+  object = perceived_threat_mean,
+  fit.measures = T,
+  standardized = T,
+  rsquare = T
+)
+```
+
+# Measurement Invaraince
+
+## Procedure
+
+Are measurements actually comparable across groups/time?
+
+Definition:
+Measurement invariance is a property of a measurement instrument, implying that the instrument measures the same concept in the same way across subgroups of respondents or time points of data assessment.
+
+Measurement invariance (MI) can be assessed with multiple-group CFA (MGCFA). Impose equality constrains on measurement parameters across groups/time (“fix them to be equal”). 
+
+Use a sequential testing strategy to test different levels of measurement invariance:
+- Configural MI
+- Metric (weak) MI
+- Scalar (strong) MI
+- Strict MI
+- ...
+
+**Configural measurement invariance**
+
+Equality constraints:
+Equal structure: pattern of factors and relationships of indicators and factors is equal across groups
+
+Implications:
+Same construct exists across groups; no comparisons of estimates!
+
+**Metric measurement invariance**
+
+Equality constraints:
+Equal structure + equal factor loadings across groups
+
+$\lambda^1 = \lambda^2 = \lambda^G$
+
+**Scalar measurement invariance**
+
+Equality constraints:
+Equal structure + equal factor loadings + equal intercepts across groups
+
+$\lambda^1 = \lambda^2 = \lambda^G$
+
+$\tau^1 = \tau^2 = \tau^G$
+
+Implications:
+Respondents from different groups “use” the scale in a similar manner; comparison of latent means are valid
+
+**Result**
+
+- Configural invariance: same structure across groups
+- Metric invariance: factor loadings set equal across groups
+- Scalar invariance: factor loadings and intercepts set equal across groups
+
+
+How decide which level of measurement invariance is supported by the data?
+
+1. Consecutively estimate the configural, metric, and scalar invariance models
+2. Inspect model fit as usual: $\chi^2$ (df), CFI, RMSEA
+3. Inspect model fit differences between models: 
+- $\chi^2 / \Delta\chi^2 (df/\Delta df)$
+- $CFI/\Delta CFI;RMSEA/\Delta RMSEA$
 
 
 
