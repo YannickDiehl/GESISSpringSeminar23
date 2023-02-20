@@ -1,7 +1,7 @@
 ---
 title: "GESIS Spring Seminar 23"
 subtitle: "Comparative Social Research with Multi-Group SEM"
-date: "Day 1 - 27.02.2023"
+date: "Day 2 - 28.02.2023"
 author: 
   - Daniel Seddig
   - Eldad Davidov
@@ -15,6 +15,8 @@ output:
 toc-title: "Table of Contents"
 header-includes: 
 - \usepackage[margins=raggedright]{floatrow} 
+bibliography: ../citations/citations.bib
+csl: ../citations/apa-5th-edition.csl
 ---
 
 ```{r package-options, include=F}
@@ -49,10 +51,22 @@ library(semptools)
 # Data
 
 ```{r}
-ESS07 <- read.csv("../Data/ESS07.csv")
+ESS07 <- read.csv("../data/ESS07.csv")
 ```
 
 # Confirmatory measurement analysis (CFA)
+
+Many variables in the social and behavioral sciences represent hypothetical constructs (e.g., traits, attitudes, values)
+
+Direct access to hypothetical constructs is rare. Many constructs can only be captured by (multiple) observable indicators (e.g., in a questionnaire)
+
+It is assumed that the such indicators are manifestations of hypothetical constructs
+- Manifest indicators: directly observable 
+- Latent variables: not directly observable
+
+We need a model that is able to conceptualize the relationship between manifest indicators and latent variables
+
+The classic test theory @novickAxiomsPrincipalResults1966 
 
 ## Procedure
 
@@ -627,5 +641,5 @@ How decide which level of measurement invariance is supported by the data?
 - $CFI/\Delta CFI;RMSEA/\Delta RMSEA$
 
 
-
+## References
 
