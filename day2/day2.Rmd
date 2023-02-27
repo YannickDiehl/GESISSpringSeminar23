@@ -58,7 +58,7 @@ It is assumed that such indicators are manifestations of hypothetical constructs
 
 We need a model that is able to conceptualize the relationship between manifest indicators and latent variables
 
-The classic test theory @novick_axioms_1966
+The classic test theory @novickAxiomsPrincipalResults1966
 
 ```{r, fig.align='center', out.width="60%", echo=F}
 knitr::include_graphics("../figs/classic_test_theory.png")
@@ -159,11 +159,11 @@ $$F_{ML}(n-1)=\chi^2_{ML}$$
 Global fit measures: appropriateness of the entire model
 
 * Absolute Goodness/Badness-of-fit Indices
-  + Relation between $\chi^2$ and degrees of freedom = $\chi^2/df$ - @joreskog_general_1969
-  + Discrepancy to a saturated model = RMSEA - @steiger_notes_2016)
+  + Relation between $\chi^2$ and degrees of freedom = $\chi^2/df$ - @joreskogGeneralApproachConfirmatory1969
+  + Discrepancy to a saturated model = RMSEA - @steigerNotesSteigerLind2016)
   + Discrepancy due to overall error = SRMR - Bentler (1995)
 * Comparative Goodness-of-fit Indices 
-  + Comparison to a null model = CFI - @bentler_comparative_1990, TLI - @tucker_reliability_1973
+  + Comparison to a null model = CFI - @bentlerComparativeFitIndexes1990, TLI - @tuckerReliabilityCoefficientMaximum1973
 * Detailed fit measures: appropriateness of specific parts of the model (e.g., constraints)
   + LRT
   + Modification indices 
@@ -182,7 +182,7 @@ Global fit measures: appropriateness of the entire model
 
 \*negative values indicate extremely misspecified model; when exceeds 1, model is extremely well-fitting
 
-*Source: West et al. (2012). Model fit and model selection in structural equation modeling. In Hoyle, R. H. (Ed.). (2012). Handbook of Structural Equation Modeling (p. 212-213). Guilford Press. See also @hu_cutoff_1999.*
+*Source: West et al. (2012). Model fit and model selection in structural equation modeling. In Hoyle, R. H. (Ed.). (2012). Handbook of Structural Equation Modeling (p. 212-213). Guilford Press. See also @huCutoffCriteriaFit1999*
 
 ### Step 7
 
@@ -203,7 +203,7 @@ How to diagnose model misfit?
 
 Modification indices (MIs):
 
-Lagrange multiplier (@sorbom_model_1989) - approximation of the reduction of $\chi^2$ if a single constrained parameter is freely estimated
+Lagrange multiplier (@sorbomModelModification1989) - approximation of the reduction of $\chi^2$ if a single constrained parameter is freely estimated
 
 * Test of local fit
 * One parameter at a time
@@ -445,7 +445,7 @@ ESS07 %>%
 ```
 * Item difficulty should range between 0.2 and 0.8. Ideal value is p+(1-p)/2 (which mostly is between 0.5 and 0.8). Lower values are a signal for more difficult items, while higher values close to one are a sign for easier items. The ideal value for item difficulty is p + (1 - p) / 2, where p = 1 / max(x). In most cases, the ideal item difficulty lies between 0.5 and 0.8.
 * For item discrimination, acceptable values are 0.20 or higher; the closer to 1.00 the better. The absolute value of the item discrimination indices should be above 0.1. An index between 0.1 and 0.3 is considered as "fair", while an index above 0.3 (or below -0.3) is "good". Items with low discrimination indices are often ambiguously worded and should be examined. Items with negative indices should be examined to determine why a negative value was obtained (e.g. reversed answer categories regarding positive and negative poles).
-* Mean inter-item-correlation is an alternative measure to indicate acceptability. Satisfactory range lies between 0.2 and 0.4. “Ideally, the average inter-item correlation for a set of items should be between .20 and .40, suggesting that while the items are reasonably homogenous, they do contain sufficiently unique variance so as to not be isomorphic with each other. When values are lower than .20, then the items may not be representative of the same content domain. If values are higher than .40, the items may be only capturing a small bandwidth of the construct.” @michalos_inter-item_2014
+* Mean inter-item-correlation is an alternative measure to indicate acceptability. Satisfactory range lies between 0.2 and 0.4. “Ideally, the average inter-item correlation for a set of items should be between .20 and .40, suggesting that while the items are reasonably homogenous, they do contain sufficiently unique variance so as to not be isomorphic with each other. When values are lower than .20, then the items may not be representative of the same content domain. If values are higher than .40, the items may be only capturing a small bandwidth of the construct.” @piedmontInteritemCorrelations2014-item_2014
 
 The selected items can be plausibly mapped together in one scale.
 
@@ -908,7 +908,7 @@ $\chi^2_d=\chi^2_{m1}-\chi^2_{m2}\ with\ df_{m1}-df_{m2}$
 
 Traditional $\chi^2$ difference testing is sensitive to sample size!
 
-Guidelines using alternative fit indices - @chen_sensitivity_2007: differences between a constrained model (m1) and a more liberal model (m2) are considered irrelevant when
+Guidelines using alternative fit indices - @chenSensitivityGoodnessFit2007: differences between a constrained model (m1) and a more liberal model (m2) are considered irrelevant when
 
 N > 300: $CFI(m1)-CFI(m2)\leq-.10\ and\ RMSEA(m1)-RMSEA(m2)\leq.015$
 
@@ -922,7 +922,7 @@ Do the mean levels of endorsement of universalism values differ across the CZ, D
 knitr::include_graphics(here::here("figs", "mgcfa_showcase.png"))
 ```
 
-### Individual measurement for each group
+### Measurement for each group
 
 Before we can approach a common model across all groups, we have to check whether the envisaged measurement model can be measured properly in each group.
 
@@ -1134,6 +1134,8 @@ summary(
 
 **Fixed factor method**
 
+**Note!** Only in one group does the variance of the latent factor for model identification have to be fixed at 1. In the other groups, factor variance is freely estimated.
+
 ```{r}
 universalism_fit_metric2 <- cfa(
     model = "
@@ -1142,10 +1144,10 @@ universalism_fit_metric2 <- cfa(
     uni ~~ 1*uni
     group: [DE]
     uni =~ NA*ipeqopt + a*ipeqopt + b*ipudrst + c*impenv
-    uni ~~ 1*uni
+    uni ~~ NA*uni
     group: [GB]
     uni =~ NA*ipeqopt + a*ipeqopt + b*ipudrst + c*impenv
-    uni ~~ 1*uni
+    uni ~~ NA*uni
   ",
   data = ESS07,
   estimator = "MLR",
@@ -1231,6 +1233,8 @@ summary(
 
 **Fixed factor method**
 
+**Note!** Only in one group does the variance and the intercept of the latent factor for model identification have to be fixed at 1 and 0, respectively. In the other groups, factor variance and intercept is freely estimated.
+
 ```{r}
 universalism_fit_scalar2 <- cfa(
     model = "
@@ -1248,7 +1252,7 @@ universalism_fit_scalar2 <- cfa(
     ipudrst ~ e*1
     impenv ~ f*1
     uni ~ NA*1
-    uni ~~ 1*uni
+    uni ~~ NA*uni
     
     group: [GB]
     uni =~ NA*ipeqopt + a*ipeqopt + b*ipudrst + c*impenv
@@ -1256,7 +1260,7 @@ universalism_fit_scalar2 <- cfa(
     ipudrst ~ e*1
     impenv ~ f*1
     uni ~ NA*1
-    uni ~~ 1*uni
+    uni ~~ NA*uni
   ",
   data = ESS07,
   estimator = "MLR",
@@ -1322,9 +1326,605 @@ summary(
   ) 
 ```
 
+## MI - Tradition/Conformity
+
+### Measurement for each group
+
+**Reference indicator method**
+
+```{r}
+tradition_conformity_fit_countries <- ESS07_countries %>% 
+  map(~ cfa(
+    model = "TraditionConformity =~ imptrad + ipfrule + ipbhprp", 
+    data = .,
+    estimator = "MLR",
+    # optional if there are missing values
+    missing = "fiml.x"
+    ))
+```
+
+```{r}
+tradition_conformity_fit_countries %>% 
+  map(~ summary(
+    object = .,
+    fit.measures = T,
+    standardized = T
+    # rsquare = T
+  ))
+```
+
+**Fixed factor method**
+
+```{r}
+tradition_conformity_fit_countries2 <- ESS07_countries %>% 
+  map(~ cfa(
+    model = "
+      TraditionConformity =~ NA*imptrad + ipfrule + ipbhprp
+      TraditionConformity ~~ 1*TraditionConformity
+    ", 
+    data = .,
+    estimator = "MLR",
+    # optional if there are missing values
+    missing = "fiml.x"
+    ))
+```
+
+```{r}
+tradition_conformity_fit_countries2 %>% 
+  map(~ summary(
+    object = .,
+    fit.measures = T,
+    standardized = T
+    # rsquare = T
+  ))
+```
+
+### Configural model
+
+**Reference indicator method**
+
+```{r}
+tradition_conformity_fit_config <- cfa(
+  model = "TraditionConformity =~ imptrad + ipfrule + ipbhprp",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = tradition_conformity_fit_config,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+**Fixed factor method**
+
+```{r}
+tradition_conformity_fit_config2 <- cfa(
+  model = "
+    group: [CZ]
+    TraditionConformity =~ NA*imptrad + ipfrule + ipbhprp
+    TraditionConformity ~~ 1*TraditionConformity
+    
+    group: [DE]
+    TraditionConformity =~ NA*imptrad + ipfrule + ipbhprp
+    TraditionConformity ~~ 1*TraditionConformity
+    
+    group: [GB]
+    TraditionConformity =~ NA*imptrad + ipfrule + ipbhprp
+    TraditionConformity ~~ 1*TraditionConformity
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = tradition_conformity_fit_config2,
+  fit.measures = T,
+  standardized = T
+)
+```
+
+
+### Metric model
+
+**Reference indicator method**
+
+```{r}
+tradition_conformity_fit_metric <- cfa(
+  model = "TraditionConformity =~ imptrad + ipfrule + ipbhprp",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  group.equal = "loadings",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = tradition_conformity_fit_metric,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+**Fixed factor method**
+
+**Note!** Only in one group does the variance of the latent factor for model identification have to be fixed at 1. In the other groups, factor variance is freely estimated.
+
+```{r}
+tradition_conformity_fit_metric2 <- cfa(
+   model = "
+    group: [CZ]
+    TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+    TraditionConformity ~~ 1*TraditionConformity
+    
+    group: [DE]
+    TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+    TraditionConformity ~~ NA*TraditionConformity
+    
+    group: [GB]
+    TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+    TraditionConformity ~~ NA*TraditionConformity
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = tradition_conformity_fit_metric2,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Scalar invariance
+
+**Reference indicator method**
+
+```{r}
+tradition_conformity_fit_scalar <- cfa(
+  model = "TraditionConformity =~ imptrad + ipfrule + ipbhprp",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  group.equal = c("loadings", "intercepts"),
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = tradition_conformity_fit_scalar,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+**Fixed factor method**
+
+**Note!** Only in one group does the variance and the intercept of the latent factor for model identification have to be fixed at 1 and 0, respectively. In the other groups, factor variance and intercept is freely estimated.
+
+```{r}
+tradition_conformity_fit_scalar2 <- cfa(
+  model = "
+    group: [CZ]
+    TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+    imptrad ~ d*1
+    ipfrule ~ e*1
+    ipbhprp ~ f*1
+    TraditionConformity ~ 0*1
+    TraditionConformity ~~ 1*TraditionConformity
+    
+    group: [DE]
+    TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+    imptrad ~ d*1
+    ipfrule ~ e*1
+    ipbhprp ~ f*1
+    TraditionConformity ~ NA*1
+    TraditionConformity ~~ NA*TraditionConformity
+    
+    group: [GB]
+    TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+    imptrad ~ d*1
+    ipfrule ~ e*1
+    ipbhprp ~ f*1
+    TraditionConformity ~ NA*1
+    TraditionConformity ~~ NA*TraditionConformity
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = tradition_conformity_fit_scalar2,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Comparing fit statistics
+
+```{r, warning=F}
+compFit.tradition_conformity <- compareFit(
+  scalar = tradition_conformity_fit_scalar,
+  metric = tradition_conformity_fit_metric,
+  config = tradition_conformity_fit_config,
+  argsLRT = list(method = "satorra.bentler.2001")
+)
+```
+
+```{r}
+summary(
+  object = compFit.tradition_conformity, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr", "aic", "bic")
+  ) 
+```
+
+**Fixed factor method**
+
+```{r, warning=F}
+compFit.tradition_conformity2 <- compareFit(
+  scalar = tradition_conformity_fit_scalar2,
+  metric = tradition_conformity_fit_metric2,
+  config = tradition_conformity_fit_config2,
+  argsLRT = list(method = "satorra.bentler.2001")
+)
+```
+
+```{r}
+summary(
+  object = compFit.tradition_conformity2, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr", "aic", "bic")
+  ) 
+```
+
+## MI - Perceived Threat
+
+### Measurement for each group
+
+**Reference indicator method**
+
+```{r}
+perceived_threat_fit_countries <- ESS07_countries %>% 
+  map(~ cfa(
+    model = "
+      PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+      imueclt   ~~  rlgueim
+    ", 
+    data = .,
+    estimator = "MLR",
+    # optional if there are missing values
+    missing = "fiml.x"
+    ))
+```
+
+```{r}
+perceived_threat_fit_countries %>% 
+  map(~ summary(
+    object = .,
+    fit.measures = T,
+    standardized = T
+    # rsquare = T
+  ))
+```
+
+**Fixed factor method**
+
+```{r}
+perceived_threat_fit_countries2 <- ESS07_countries %>% 
+  map(~ cfa(
+    model = "
+      PerceivedThreat =~ NA*imbgeco + imueclt + imtcjob + rlgueim
+      imueclt ~~ rlgueim
+      PerceivedThreat ~~ 1*PerceivedThreat
+    ", 
+    data = .,
+    estimator = "MLR",
+    # optional if there are missing values
+    missing = "fiml.x"
+    ))
+```
+
+```{r}
+perceived_threat_fit_countries2 %>% 
+  map(~ summary(
+    object = .,
+    fit.measures = T,
+    standardized = T
+    # rsquare = T
+  ))
+```
+
+### Configural model
+
+**Reference indicator method**
+
+```{r}
+perceived_threat_fit_config <- cfa(
+  model = "
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = perceived_threat_fit_config,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+**Fixed factor method**
+
+```{r}
+perceived_threat_fit_config2 <- cfa(
+  model = "
+    group: [CZ]
+    PerceivedThreat =~ NA*imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+    PerceivedThreat ~~ 1*PerceivedThreat
+    
+    group: [DE]
+    PerceivedThreat =~ NA*imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+    PerceivedThreat ~~ 1*PerceivedThreat
+    
+    group: [GB]
+    PerceivedThreat =~ NA*imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+    PerceivedThreat ~~ 1*PerceivedThreat
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = perceived_threat_fit_config2,
+  fit.measures = T,
+  standardized = T
+)
+```
+
+
+### Metric model
+
+**Reference indicator method**
+
+```{r}
+perceived_threat_fit_metric <- cfa(
+  model = "
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  group.equal = "loadings",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = perceived_threat_fit_metric,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+**Fixed factor method**
+
+**Note!** Only in one group does the variance of the latent factor for model identification have to be fixed at 1. In the other groups, factor variance is freely estimated.
+
+```{r}
+perceived_threat_fit_metric2 <- cfa(
+   model = "
+    group: [CZ]
+    PerceivedThreat =~ NA*imbgeco + a*imbgeco + b*imueclt + c*imtcjob + d*rlgueim
+    imueclt ~~ rlgueim
+    PerceivedThreat ~~ 1*PerceivedThreat
+    
+    group: [DE]
+    PerceivedThreat =~ NA*imbgeco + a*imbgeco + b*imueclt + c*imtcjob + d*rlgueim
+    imueclt ~~ rlgueim
+    PerceivedThreat ~~ NA*PerceivedThreat
+    
+    group: [GB]
+    PerceivedThreat =~ NA*imbgeco + a*imbgeco + b*imueclt + c*imtcjob + d*rlgueim
+    imueclt ~~ rlgueim
+    PerceivedThreat ~~ NA*PerceivedThreat
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = perceived_threat_fit_metric2,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Scalar invariance
+
+**Reference indicator method**
+
+```{r}
+perceived_threat_fit_scalar <- cfa(
+  model = "
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  group.equal = c("loadings", "intercepts"),
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = perceived_threat_fit_scalar,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+**Fixed factor method**
+
+**Note!** Only in one group does the variance and the intercept of the latent factor for model identification have to be fixed at 1 and 0, respectively. In the other groups, factor variance and intercept is freely estimated.
+
+```{r}
+perceived_threat_fit_scalar2 <- cfa(
+  model = "
+    group: [CZ]
+    PerceivedThreat =~ NA*imbgeco + a*imbgeco + b*imueclt + c*imtcjob + d*rlgueim
+    imueclt ~~ rlgueim
+    imbgeco ~ e*1
+    imueclt ~ f*1
+    imtcjob ~ g*1
+    rlgueim ~ h*1
+    PerceivedThreat ~ 0*1
+    PerceivedThreat ~~ 1*PerceivedThreat
+    
+    group: [DE]
+    PerceivedThreat =~ NA*imbgeco + a*imbgeco + b*imueclt + c*imtcjob + d*rlgueim
+    imueclt ~~ rlgueim
+    imbgeco ~ e*1
+    imueclt ~ f*1
+    imtcjob ~ g*1
+    rlgueim ~ h*1
+    PerceivedThreat ~ NA*1
+    PerceivedThreat ~~ NA*PerceivedThreat
+    
+    group: [GB]
+    PerceivedThreat =~ NA*imbgeco + a*imbgeco + b*imueclt + c*imtcjob + d*rlgueim
+    imueclt ~~ rlgueim
+    imbgeco ~ e*1
+    imueclt ~ f*1
+    imtcjob ~ g*1
+    rlgueim ~ h*1
+    PerceivedThreat ~ NA*1
+    PerceivedThreat ~~ NA*PerceivedThreat
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = perceived_threat_fit_scalar2,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Comparing fit statistics
+
+```{r, warning=F}
+compFit.perceived_threat <- compareFit(
+  scalar = perceived_threat_fit_scalar,
+  metric = perceived_threat_fit_metric,
+  config = perceived_threat_fit_config,
+  argsLRT = list(method = "satorra.bentler.2001")
+)
+```
+
+```{r}
+summary(
+  object = compFit.perceived_threat, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr", "aic", "bic")
+  ) 
+```
+
+**Fixed factor method**
+
+```{r, warning=F}
+compFit.perceived_threat2 <- compareFit(
+  scalar = perceived_threat_fit_scalar2,
+  metric = perceived_threat_fit_metric2,
+  config = perceived_threat_fit_config2,
+  argsLRT = list(method = "satorra.bentler.2001")
+)
+```
+
+```{r}
+summary(
+  object = compFit.perceived_threat2, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr", "aic", "bic")
+  ) 
+```
+
+
 # Partial measurement invariance
 
-Partial measurement invariance @byrne_testing_1989
+Partial measurement invariance @byrneTestingEquivalenceFactor1989
 
 * In contrast to “full” MI only a few parameters are kept invariant
 * Two indicators with invariant loadings and intercepts are sufficient for valid latent mean comparisons
@@ -1349,9 +1949,9 @@ universalism_fit_metric2 %>%
 * Total score test: $\chi^2$ reduction if all constraints were removed
 * Univariate score tests: $\chi^2$ reduction for removing a single constraint
 
-.p2. == .p13. -> Constraint with the largest $\chi^2$ reduction
+.p3. == .p25. -> Constraint with the largest $\chi^2$ reduction
 
-What do the parameter labels (.p2. & .p13.) mean?
+What do the parameter labels (.p3. & .p25.) mean?
 
 ```{r}
 universalism_fit_metric2 %>% 
@@ -1361,22 +1961,24 @@ universalism_fit_metric2 %>%
   export_table(table_width = 1, digits = 2)
 ```
 
-Obviously, we achieve the largest $\chi^2$ reduction in the metric invariance model by freely calculating the factor loading of item ipudrst, because there is a clear difference between group CZ and DE.
+Obviously, we achieve the largest $\chi^2$ reduction in the metric invariance model by freely calculating the factor loading of item impenv, because there is a clear difference between group CZ and GB.
 
 ### Partial metric invariance
+
+**Note!** Only in one group does the variance of the latent factor for model identification have to be fixed at 1. In the other groups, factor variance is freely estimated.
 
 ```{r}
 universalism_fit_metric_partial <- cfa(
     model = "
     group: [CZ]
-    uni =~ NA*ipeqopt + a*ipeqopt + NA*ipudrst + c*impenv
+    uni =~ NA*ipeqopt + a*ipeqopt + b*ipudrst + NA*impenv
     uni ~~ 1*uni
     group: [DE]
-    uni =~ NA*ipeqopt + a*ipeqopt + NA*ipudrst + c*impenv
-    uni ~~ 1*uni
+    uni =~ NA*ipeqopt + a*ipeqopt + b*ipudrst + c*impenv
+    uni ~~ NA*uni
     group: [GB]
-    uni =~ NA*ipeqopt + a*ipeqopt + NA*ipudrst + c*impenv
-    uni ~~ 1*uni
+    uni =~ NA*ipeqopt + a*ipeqopt + b*ipudrst + NA*impenv
+    uni ~~ NA*uni
   ",
   data = ESS07,
   estimator = "MLR",
@@ -1397,7 +1999,7 @@ summary(
 
 **Comparing fit statistics**
 
-Finally, we want to check whether the respective models with tightened measurement invariance do not show any significant deterioration in the data fitting and thus do not falsify the assumption of the corresponding measurement invariances.
+Now we want to see if there is a partial metric measurement invariance after the free computation of impenv.
 
 ```{r, warning=F}
 compFit.universalism2 <- compareFit(
@@ -1416,36 +2018,41 @@ summary(
                    "srmr", "aic", "bic")
   ) 
 ```
-CFI and RMSEA differences are too large according to @chen_sensitivity_2007, but overall acceptable. As a result, it is due to our consideration whether we have a metric measurement invariance here. It can be argued that the deviation in the CFI and RMSEA is negligible and the measurement model with metric invariance has a very good data fit. In this case we follow this reasoning and check further for scalar measurement invariance.
+
+In fact, there is a partial metric measurement invariance, since both the strict $\chi^2$ difference test is insignificant and the alternative fit measures CFI and RMSEA are below their cut off.
 
 ### Partial scalar invariance
+
+Since two variables must be completely invariant in order to be able to speak of partial measurement invariance, we can only let impenv freely calculate the intercepts here.
+
+**Note!** Only in one group does the variance and the intercept of the latent factor for model identification have to be fixed at 1 and 0, respectively. In the other groups, factor variance and intercept is freely estimated.
 
 ```{r}
 universalism_fit_scalar_partial <- cfa(
     model = "
     group: [CZ]
-    uni =~ NA*ipeqopt + a*ipeqopt + NA*ipudrst + c*impenv
+    uni =~ NA*ipeqopt + a*ipeqopt + b*ipudrst + NA*impenv
     ipeqopt ~ d*1
     ipudrst ~ e*1
-    impenv ~ f*1
+    impenv ~ NA*1
     uni ~ 0*1
     uni ~~ 1*uni
     
     group: [DE]
-    uni =~ NA*ipeqopt + a*ipeqopt + NA*ipudrst + c*impenv
+    uni =~ NA*ipeqopt + a*ipeqopt + b*ipudrst + c*impenv
     ipeqopt ~ d*1
     ipudrst ~ e*1
     impenv ~ f*1
     uni ~ NA*1
-    uni ~~ 1*uni
+    uni ~~ NA*uni
     
     group: [GB]
-    uni =~ NA*ipeqopt + a*ipeqopt + NA*ipudrst + c*impenv
+    uni =~ NA*ipeqopt + a*ipeqopt + b*ipudrst + NA*impenv
     ipeqopt ~ d*1
     ipudrst ~ e*1
-    impenv ~ f*1
+    impenv ~ NA*1
     uni ~ NA*1
-    uni ~~ 1*uni
+    uni ~~ NA*uni
   ",
   data = ESS07,
   estimator = "MLR",
@@ -1463,6 +2070,8 @@ summary(
   # rsquare = T
 )
 ```
+
+### Comparing fit statistics
 
 ```{r, warning=F}
 compFit.universalism3 <- compareFit(
@@ -1482,12 +2091,651 @@ summary(
   ) 
 ```
 
-This also shows that we have to weigh up a rather critical case. The CFI and RMSEA deteriorate significantly and the fit to the data is also borderline. In this respect, it is a question of the researcher which point of view he wants to represent. As an example, we assume scalar measurement invariance here and consider the relative latent means, although we would rather assume no partial scalar measurement invariance here. In this case we would rather choose to use an approximate method.
+Finally, there is now a partial scalar measurement invariance. Although the stricter $\chi^2$ difference test is insignificant, the CFI and RMSEA hardly deviate from the partially metric invariance model and thus fulfill the criteria according to @chenSensitivityGoodnessFit2007. We can interpret the relative latent means as follows.
 
 **Result**
 
 So we can see that in relation to CZ the countries DE and GB have a significantly higher latent mean (see Intercepts uni).
 
+## Partial MI - Tradition/Conformity
+
+Since we only calculate three factor loadings in our measurement model and we only have a partial measurement invariance if two factor loadings are measurement invariant, we have to use the fixed factor method to calculate all factor loadings.
+
+
+```{r, warning=F}
+tradition_conformity_fit_scalar %>% 
+  lavTestScore() %>% 
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
+
+.p10. == .p32. -> Constraint with the largest $\chi^2$ reduction 
+
+What do the parameter labels (.p10. & .p32.) mean?
+
+```{r}
+tradition_conformity_fit_scalar %>% 
+  parTable() %>% 
+  select(lhs, op, rhs, group, label, plabel, est, se) %>% 
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
+
+### Partial scalar invariance
+
+**Note!** Only in one group does the variance and the intercept of the latent factor for model identification have to be fixed at 1 and 0, respectively. In the other groups, factor variance and intercept is freely estimated.
+
+```{r}
+tradition_conformity_fit_scalar_partial <- cfa(
+  model = "
+    group: [CZ]
+    TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+    imptrad ~ d*1
+    ipfrule ~ e*1
+    ipbhprp ~ NA*1
+    TraditionConformity ~ 0*1
+    TraditionConformity ~~ 1*TraditionConformity
+    
+    group: [DE]
+    TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+    imptrad ~ d*1
+    ipfrule ~ e*1
+    ipbhprp ~ f*1
+    TraditionConformity ~ NA*1
+    TraditionConformity ~~ NA*TraditionConformity
+    
+    group: [GB]
+    TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+    imptrad ~ d*1
+    ipfrule ~ e*1
+    ipbhprp ~ NA*1
+    TraditionConformity ~ NA*1
+    TraditionConformity ~~ NA*TraditionConformity
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = tradition_conformity_fit_scalar_partial,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Comparing fit statistics
+
+```{r, warning=F}
+compFit.tradition_conformity3 <- compareFit(
+  scalar = tradition_conformity_fit_scalar_partial,
+  metric = tradition_conformity_fit_metric,
+  config = tradition_conformity_fit_config,
+  argsLRT = list(method = "satorra.bentler.2001")
+)
+```
+
+```{r}
+summary(
+  object = compFit.tradition_conformity3, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr", "aic", "bic")
+  ) 
+```
+
+In this case there is no partial scalar measurement invariance, as long as we apply the stricter $\chi^2$ differences test and stick to the cut-off criteria according to @chenSensitivityGoodnessFit2007 Nevertheless, the model shows a very good data fit and it is up to us to decide whether to assume partial scalar measurement invariance or not. This could be explained above all by the fact that @chenSensitivityGoodnessFit2007 results are only based on simulations and we are dealing with real data here.
+
+**Result**
+
+DE and GB have a significantly lower relative latent mean than CZ in terms of tradition/conformity.
+
+
+## Partial MI - Perceived Threat
+
+Now that we can work with four indicators, we will use the Reference indicator method for this example.
+
+```{r, warning=F}
+perceived_threat_fit_scalar %>% 
+  lavTestScore() %>% 
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
+
+.p11. == .p26. -> Constraint with the largest $\chi^2$ reduction 
+
+What do the parameter labels (.p11. & .p26.) mean?
+
+```{r}
+perceived_threat_fit_scalar %>% 
+  parTable() %>% 
+  select(lhs, op, rhs, group, label, plabel, est, se) %>% 
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
+
+### Partial scalar invariance
+
+**Note!** Only in one group does the variance and the intercept of the latent factor for model identification have to be fixed at 1 and 0, respectively. In the other groups, factor variance and intercept is freely estimated.
+
+```{r}
+perceived_threat_fit_scalar_partial <- cfa(
+  model = "
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  group.equal = c("loadings", "intercepts"),
+  group.partial = c("imbgeco~1"),
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = perceived_threat_fit_scalar_partial,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Comparing fit statistics
+
+```{r, warning=F}
+compFit.perceived_threat3 <- compareFit(
+  scalar = perceived_threat_fit_scalar_partial,
+  metric = perceived_threat_fit_metric,
+  config = perceived_threat_fit_config,
+  argsLRT = list(method = "satorra.bentler.2001")
+)
+```
+
+```{r}
+summary(
+  object = compFit.perceived_threat3, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr", "aic", "bic")
+  ) 
+```
+
+**Result**
+
+DE and GB have a significantly lower relative latent mean than CZ in terms of perceived threat.
+
+# Simultaneous factor analyses
+
+## SCFA
+
+```{r}
+scfa_fit <- cfa(
+  model = "
+    Universalism =~ ipeqopt + ipudrst + impenv
+    TraditionConformity =~ imptrad + ipfrule + ipbhprp
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt   ~~  rlgueim
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = scfa_fit,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+```{r, results='hide'}
+scfa_plot <- scfa_fit %>% 
+  semPaths(
+    whatLabels = "std", 
+    style = "mx", 
+    layout = "tree2", 
+    edge.color = "black", 
+    intercepts = F,
+    sizeMan = 8, 
+    sizeLat = 10, 
+    edge.label.cex = .65,
+    nCharNodes = 50
+  ) 
+```
+
+```{r}
+scfa_plot %>% 
+  mark_sig(scfa_fit) %>% 
+  plot()
+```
+
+## MI - SCFA
+
+### Measurement for each group
+
+**Reference indicator method**
+
+```{r}
+scfa_fit_countries <- ESS07_countries %>% 
+  map(~ cfa(
+    model = "
+      Universalism =~ ipeqopt + ipudrst + impenv
+      TraditionConformity =~ imptrad + ipfrule + ipbhprp
+      PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+      imueclt ~~ rlgueim
+    ", 
+    data = .,
+    estimator = "MLR",
+    # optional if there are missing values
+    missing = "fiml.x"
+    ))
+```
+
+```{r}
+scfa_fit_countries %>% 
+  map(~ summary(
+    object = .,
+    fit.measures = T,
+    standardized = T
+    # rsquare = T
+  ))
+```
+
+**Fixed factor method**
+
+```{r}
+scfa_fit_countries2 <- ESS07_countries %>% 
+  map(~ cfa(
+    model = "
+      Universalism =~ NA*ipeqopt + ipudrst + impenv
+      Universalism ~~ 1*Universalism
+      
+      TraditionConformity =~ NA*imptrad + ipfrule + ipbhprp
+      TraditionConformity ~~ 1*TraditionConformity
+      
+      PerceivedThreat =~ NA*imbgeco + imueclt + imtcjob + rlgueim
+      imueclt ~~ rlgueim
+      PerceivedThreat ~~ 1*PerceivedThreat
+    ", 
+    data = .,
+    estimator = "MLR",
+    # optional if there are missing values
+    missing = "fiml.x"
+    ))
+```
+
+```{r}
+scfa_fit_countries2 %>% 
+  map(~ summary(
+    object = .,
+    fit.measures = T,
+    standardized = T
+    # rsquare = T
+  ))
+```
+
+### Configural model
+
+**Reference indicator method**
+
+```{r}
+scfa_fit_config <- cfa(
+  model = "
+    Universalism =~ ipeqopt + ipudrst + impenv
+    TraditionConformity =~ imptrad + ipfrule + ipbhprp
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = scfa_fit_config,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+**Fixed factor method**
+
+```{r}
+scfa_fit_config2 <- cfa(
+  model = "
+    Universalism =~ c(NA, NA, NA)*ipeqopt + ipudrst + impenv
+    Universalism ~~ c(1, 1, 1)*Universalism
+    
+    TraditionConformity =~ c(NA, NA, NA)*imptrad + ipfrule + ipbhprp
+    TraditionConformity ~~ c(1, 1, 1)*TraditionConformity
+    
+    PerceivedThreat =~ c(NA, NA, NA)*imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+    PerceivedThreat ~~ c(1, 1, 1)*PerceivedThreat
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = scfa_fit_config2,
+  fit.measures = T,
+  standardized = T
+)
+```
+
+
+### Metric model
+
+**Reference indicator method**
+
+```{r}
+scfa_fit_metric <- cfa(
+  model = "
+    Universalism =~ ipeqopt + ipudrst + impenv
+    TraditionConformity =~ imptrad + ipfrule + ipbhprp
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  group.equal = "loadings",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = scfa_fit_metric,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+**Fixed factor method**
+
+**Note!** Only in one group does the variance of the latent factor for model identification have to be fixed at 1. In the other groups, factor variance is freely estimated.
+
+```{r}
+scfa_fit_metric2 <- cfa(
+   model = "
+    Universalism =~ c(NA,NA,NA)*ipeqopt + c(a,a,a)*ipeqopt + c(b,b,b)*ipudrst + c(c,c,c)*impenv
+    Universalism ~~ c(1,NA,NA)*Universalism
+    
+    TraditionConformity =~ c(NA,NA,NA)*imptrad + c(d,d,d)*imptrad + c(e,e,e)*ipfrule + c(f,f,f)*ipbhprp
+    TraditionConformity ~~ c(1,NA,NA)*TraditionConformity
+    
+    PerceivedThreat =~ c(NA,NA,NA)*imbgeco + c(g,g,g)*imbgeco + c(h,h,h)*imueclt + c(i,i,i)*imtcjob + c(j,j,j)*rlgueim
+    imueclt ~~ rlgueim
+    PerceivedThreat ~~ c(1, NA, NA)*PerceivedThreat
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = scfa_fit_metric2,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Scalar invariance
+
+**Reference indicator method**
+
+```{r}
+scfa_fit_scalar <- cfa(
+  model = "
+    Universalism =~ ipeqopt + ipudrst + impenv
+    TraditionConformity =~ imptrad + ipfrule + ipbhprp
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  group.equal = c("loadings", "intercepts"),
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = scfa_fit_scalar,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+**Fixed factor method**
+
+**Note!** Only in one group does the variance and the intercept of the latent factor for model identification have to be fixed at 1 and 0, respectively. In the other groups, factor variance and intercept is freely estimated.
+
+```{r}
+scfa_fit_scalar2 <- cfa(
+  model = "
+    Universalism =~ c(NA,NA,NA)*ipeqopt + c(a,a,a)*ipeqopt + c(b,b,b)*ipudrst + c(c,c,c)*impenv
+    ipeqopt ~ c(k,k,k)*1
+    ipudrst ~ c(l,l,l)*1
+    impenv ~ c(m,m,m)*1
+    Universalism ~ c(0,NA,NA)*1
+    Universalism ~~ c(1,NA,NA)*Universalism
+    
+    TraditionConformity =~ c(NA,NA,NA)*imptrad + c(d,d,d)*imptrad + c(e,e,e)*ipfrule + c(f,f,f)*ipbhprp
+    imptrad ~ c(o,o,o)*1
+    ipfrule ~ c(p,p,p)*1
+    ipbhprp ~ c(q,q,q)*1
+    TraditionConformity ~ c(0,NA,NA)*1
+    TraditionConformity ~~ c(1,NA,NA)*TraditionConformity
+    
+    PerceivedThreat =~ c(NA,NA,NA)*imbgeco + c(g,g,g)*imbgeco + c(h,h,h)*imueclt + c(i,i,i)*imtcjob + c(j,j,j)*rlgueim
+    imueclt ~~ rlgueim
+    imbgeco ~ c(r,r,r)*1
+    imueclt ~ c(s,s,s)*1
+    imtcjob ~ c(t,t,t)*1
+    rlgueim ~ c(u,u,u)*1
+    PerceivedThreat ~ c(0,NA,NA)*1
+    PerceivedThreat ~~ c(1,NA,NA)*PerceivedThreat
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = scfa_fit_scalar2,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Comparing fit statistics
+
+```{r, warning=F}
+compFit.scfa <- compareFit(
+  scalar = scfa_fit_scalar,
+  metric = scfa_fit_metric,
+  config = scfa_fit_config,
+  argsLRT = list(method = "satorra.bentler.2001")
+)
+```
+
+```{r}
+summary(
+  object = compFit.scfa, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr", "aic", "bic")
+  ) 
+```
+
+**Fixed factor method**
+
+```{r, warning=F}
+compFit.scfa2 <- compareFit(
+  scalar = scfa_fit_scalar2,
+  metric = scfa_fit_metric2,
+  config = scfa_fit_config2,
+  argsLRT = list(method = "satorra.bentler.2001")
+)
+```
+
+```{r}
+summary(
+  object = compFit.scfa2, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr", "aic", "bic")
+  ) 
+```
+
+## Partial MI - SCFA
+
+### Partial scalar invariance
+
+```{r, warning=F}
+scfa_fit_scalar %>% 
+  lavTestScore() %>% 
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
+
+.p33. == .p113. -> Constraint with the largest χ2reduction
+
+What do the parameter labels (.p33. & .p113.) mean?
+
+```{r}
+scfa_fit_scalar %>% 
+  parTable() %>% 
+  select(lhs, op, rhs, group, label, plabel, est, se) %>% 
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
+
+**Fixed factor method**
+
+```{r}
+scfa_fit_scalar_partial <- cfa(
+  model = "
+    Universalism =~ c(NA,NA,NA)*ipeqopt + c(a,a,a)*ipeqopt + c(b,b,b)*ipudrst + c(c,c,c)*impenv
+    ipeqopt ~ c(k,k,k)*1
+    ipudrst ~ c(l,l,l)*1
+    impenv ~ c(m,m,m)*1
+    Universalism ~ c(0,NA,NA)*1
+    Universalism ~~ c(1,NA,NA)*Universalism
+    
+    TraditionConformity =~ c(NA,NA,NA)*imptrad + c(d,d,d)*imptrad + c(e,e,e)*ipfrule + c(f,f,f)*ipbhprp
+    imptrad ~ c(o,o,o)*1
+    ipfrule ~ c(p,p,p)*1
+    ipbhprp ~ c(NA,NA,NA)*1 # !
+    TraditionConformity ~ c(0,NA,NA)*1
+    TraditionConformity ~~ c(1,NA,NA)*TraditionConformity
+    
+    PerceivedThreat =~ c(NA,NA,NA)*imbgeco + c(g,g,g)*imbgeco + c(h,h,h)*imueclt + c(i,i,i)*imtcjob + c(j,j,j)*rlgueim
+    imueclt ~~ rlgueim
+    imbgeco ~ c(r,r,r)*1
+    imueclt ~ c(s,s,s)*1
+    imtcjob ~ c(t,t,t)*1
+    rlgueim ~ c(u,u,u)*1
+    PerceivedThreat ~ c(0,NA,NA)*1
+    PerceivedThreat ~~ c(1,NA,NA)*PerceivedThreat
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = scfa_fit_scalar_partial,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Comparing fit statistics
+
+```{r, warning=F}
+compFit.scfa.3 <- compareFit(
+  scalar = scfa_fit_scalar_partial,
+  metric = scfa_fit_metric2,
+  config = scfa_fit_config2,
+  argsLRT = list(method = "satorra.bentler.2001")
+)
+```
+
+```{r}
+summary(
+  object = compFit.scfa.3, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr", "aic", "bic")
+  ) 
+```
+
+### 2 Search for parameters
+
+```{r, warning=F}
+scfa_fit_scalar_partial %>% 
+  lavTestScore() %>% 
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
+
+.p22. == .p62. -> Constraint with the largest χ2reduction
+
+What do the parameter labels (.p22. & .p62.) mean?
+
+```{r}
+scfa_fit_scalar_partial %>% 
+  parTable() %>% 
+  select(lhs, op, rhs, group, label, plabel, est, se) %>% 
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
 
 
 # References
