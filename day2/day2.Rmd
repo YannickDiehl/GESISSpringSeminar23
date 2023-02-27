@@ -2,25 +2,20 @@
 title: "GESIS Spring Seminar 23"
 subtitle: "Comparative Social Research with Multi-Group SEM"
 date: "Day 2 - 28.02.2023"
-author: 
-  - Daniel Seddig
-  - Eldad Davidov
-  - Peter Schmidt
-  - Yannick Diehl
+author: Daniel Seddig, Eldad Davidov, Peter Schmidt, Yannick Diehl
 output: 
-  pdf_document:
-    df_print: kable
-    toc: true
-    toc_depth: 2
+  html_document: 
+    toc: yes
+    toc_depth: 3
+    toc_float: true
 toc-title: "Table of Contents"
-header-includes: 
-- \usepackage[margins=raggedright]{floatrow} 
 bibliography: ../citations/citations.bib
-csl: ../citations/apa-5th-edition.csl
+biblio-style: "apalike"
+link-citations: true
 ---
 
 ```{r package-options, include=F}
-knitr::opts_chunk$set(comment = "")
+knitr::opts_chunk$set(comment = "", fig.align='center')
 ```
 
 # Packages
@@ -28,7 +23,6 @@ knitr::opts_chunk$set(comment = "")
 ```{r setup, results='hide', message=F, warning=F}
 # basic tools 
 library(tidyverse)
-library(sjmisc)
 
 # checking data
 library(MVN)
@@ -54,74 +48,209 @@ library(semptools)
 ESS07 <- read.csv("../data/ESS07.csv")
 ```
 
-# Confirmatory measurement analysis (CFA)
+# Confirmatory factor analysis
 
 Many variables in the social and behavioral sciences represent hypothetical constructs (e.g., traits, attitudes, values)
 
 Direct access to hypothetical constructs is rare. Many constructs can only be captured by (multiple) observable indicators (e.g., in a questionnaire)
 
-It is assumed that the such indicators are manifestations of hypothetical constructs
-- Manifest indicators: directly observable 
-- Latent variables: not directly observable
+It is assumed that such indicators are manifestations of hypothetical constructs - Manifest indicators: directly observable - Latent variables: not directly observable
 
 We need a model that is able to conceptualize the relationship between manifest indicators and latent variables
 
-The classic test theory @novickAxiomsPrincipalResults1966 
+The classic test theory @novick_axioms_1966
+
+```{r, fig.align='center', out.width="60%", echo=F}
+knitr::include_graphics("../figs/classic_test_theory.png")
+```
 
 ## Procedure
 
-Step 1: Translation of the theoretical model into a measurement model
+### Step 1 
 
--   We need a model that is able to conceptualize the relationship between manifest indicators and latent variables
+**Translation of the theoretical model into a measurement model**
 
-Step 2: Checking whether it is a reflexive or formative construct
+We need a model that is able to conceptualize the relationship between manifest indicators and latent variables
 
--   Reflective measurement: indicators are "effects" of the latent variable
--   Formative measurement: latent variable is "caused" or composed by the manifest indicators
+```{r, out.width="60%", echo=F}
+knitr::include_graphics(here::here("figs", "formal_model.png"))
+```
 
-Step 3: Specification of the model (Choose a method to assign a scale to the latent variable)
+The formal expression is:
 
--   Reference indicator method: factor loading of one indicator is fixed to 1.0
--   Fixed factor method: the factor variance is fixed to 1.0
+$$
+\begin{split}
+y_1=\lambda_1\eta+\epsilon_1 \\
+y_2=\lambda_2\eta+\epsilon_2 \\ 
+y_3=\lambda_3\eta+\epsilon_3
+\end{split}
+$$
 
-Step 4: Checking the model assumptions (ML estimation requirements)
+$$\boldsymbol{Y}=\boldsymbol{\Lambda}\eta+\boldsymbol{E}$$
 
--   Data are continuous and multivariate normal (case of non-normal data standard errors and chi-sqare-statistics should be adjusted - e.g., robust ML = MLR)
--   Sample size is sufficiently large (ratio of number of cases and number of parameters - N:q rule =\> 20:1 or 10:1)
 
-Step 5: Checking wether the model is identified
+### Step 2 
 
--   Complexity of a CFA models is limited by the total number of observations (p) and the number of unknown model parameters (q)
--   Degrees of freedom must be at least zero: df = p - q \>= 0
--   j = number of indicators
--   p = j \* (j + 1) / 2
--   q = counting of the parameters to be calculated (factor loading, residual error, factor variance)
--   df = 0 =\> model is idenitfied and saturated / df \> 0 =\> model is overidentified
+**Checking whether it is a reflexive or formative construct**
 
-Step 6: Checking the fit measurements
+Test the hypothesized relationship between observed indicators and latent variables
+
+* Reflective measurement: indicators are "effects" of the latent variable
+* Formative measurement: latent variable is "caused" or composed by the manifest indicators
+
+```{r, fig.show = "hold", out.width = "30%", fig.align = "default", echo=F}
+knitr::include_graphics(c("../figs/reflective_factor.png", "../figs/formative_factor.png"))
+```
+
+### Step 3 
+
+**Specification of the model (Choose a method to assign a scale to the latent variable)**
+
+* Reference indicator method: factor loading of one indicator is fixed to 1.0
+* Fixed factor method: the factor variance is fixed to 1.0
+
+```{r, fig.show = "hold", out.width = "50%", fig.align = "default", echo=F}
+knitr::include_graphics(c("../figs/reference_indicator.png", "../figs/fixed_factor.png"))
+```
+
+### Step 4
+
+**Checking the model assumptions (ML estimation requirements)**
+
+* Sample size is sufficiently large (ratio of number of cases and number of parameters - N:q rule =\> 20:1 or 10:1)
+* Items are continuous and multivariate normal (case of non-normal data standard errors and $\chi^2$-statistics should be adjusted - e.g., robust ML = MLR)
+    + Small samples (< 100): overestimation of $\chi^2_{ML}$
+    + Large samples (> 400): $\chi^2_{ML}$ is almost always significant
+* Problem: $\chi^2$ is sensitive to sample size
+  + The importance of small discrepancies is inflated
+  + H0 may be rejected although the model is a good one
+
+
+### Step 5
+
+**Checking wether the model is identified**
+
+Complexity of a CFA model is limited by the total **number of observations** (p) and the **number of unknown model parameters** (q)
+
+```{r, out.width = "60%", echo=F, fig.align='left'}
+knitr::include_graphics(here::here("figs", "model_identification.png"))
+```
+
+The following applies:
+
+```{r, fig.show = "hold", out.width = "50%", fig.align = "default", echo=F}
+knitr::include_graphics(c("../figs/model_identification1.png", "../figs/model_identification2.png"))
+```
+
+With df > 0 we can test the fit of the estimated model to the empirical data
+
+The maximum likelihood function minimizes the discrepancy between observed and model implied (co)variances
+
+$$F_{ML}=ln|\Sigma(\theta)|-ln|S|+tr[S\Sigma(\theta)^{-1}]-p$$
+
+The final value of the discrepancy function $F_{ML}$ multiplied with n – 1 follows a $\chi^2$ distribution:
+
+$$F_{ML}(n-1)=\chi^2_{ML}$$
+
+### Step 6
+
+**Checking the fit measurements**
+
+Global fit measures: appropriateness of the entire model
+
+* Absolute Goodness/Badness-of-fit Indices
+  + Relation between $\chi^2$ and degrees of freedom = $\chi^2/df$ - @joreskog_general_1969
+  + Discrepancy to a saturated model = RMSEA - @steiger_notes_2016)
+  + Discrepancy due to overall error = SRMR - Bentler (1995)
+* Comparative Goodness-of-fit Indices 
+  + Comparison to a null model = CFI - @bentler_comparative_1990, TLI - @tucker_reliability_1973
+* Detailed fit measures: appropriateness of specific parts of the model (e.g., constraints)
+  + LRT
+  + Modification indices 
+  + Residual matrices
+
 
 | Index  | Typ     | Theoretical range | Cut-off             | N sensitive    | Penalty for complexity |
 |--------|---------|-------------------|---------------------|----------------|------------------------|
-| X2/df  | badness | \>= 0             | \< 5                | yes            | no                     |
-| CFI    | godness | 0.0 -- 1.0        | \>= 0.95 (\>= 0.90) | no             | yes                    |
+| X2/df  | badness | $\ge 0$           | $<5$                | yes            | no                     |
+| CFI    | godness | 0.0 -- 1.0        | $\ge.95\ (\ge.90)$  | no             | yes                    |
 | TLI    | godness | 0.0 -- 1.0\*      | /                   | no             | yes                    |
-| SRMR   | badness | \>= 0             | \< 0.08             | yes            | no                     |
-| RMSEA  | badness | \>= 0             | \<= 0.05 (\<= 0.08) | yes to small N | yes                    |
-| PCLOSE | badness | 0.0 -- 1.0        | \>= 0.95            | yes            | /                      |
+| SRMR   | badness | $\ge 0$           | $<.08$              | yes            | no                     |
+| RMSEA  | badness | $\ge 0$           | $\leq.05\ (\leq.08)$| yes to small N | yes                    |
+| PCLOSE | badness | 0.0 -- 1.0        | $\ge.95$            | yes            | /                      |
+
 
 \*negative values indicate extremely misspecified model; when exceeds 1, model is extremely well-fitting
 
-Step 7: Checking for misspecification
+*Source: West et al. (2012). Model fit and model selection in structural equation modeling. In Hoyle, R. H. (Ed.). (2012). Handbook of Structural Equation Modeling (p. 212-213). Guilford Press. See also @hu_cutoff_1999.*
 
--   What causes model misfit? =\> Indicator choice, Factor choice, Violations of assumptions (e.g., multivariate normality) and Causal structure (e.g., restrictions)
--   How to diagnose model misfit? =\> Parameter estimates (Heywood cases?), Residual matrices (i.e., differences between observed and estimated covariances), Modification indices (approximation of the reduction of chi-square if a single constrained parameter is freely estimated)
+### Step 7
 
-Step 8: Identifying the mean structure (optional)
+**Checking for misspecification**
 
--   Fixing the intercept of the reference indicator to zero
--   Fixing the latent mean to zero
+What causes model misfit?
 
-## CFA model of Universalism
+* Indicator choice 
+* Factor choice
+* Violations of assumptions (e.g., multivariate normality) 
+* Causal structure (e.g., restrictions)
+
+How to diagnose model misfit? 
+
+* Parameter estimates (Heywood cases?)
+* Residual matrices (i.e., differences between observed and estimated covariances)
+* Modification indices (approximation of the reduction of chi-square if a single constrained parameter is freely estimated)
+
+Modification indices (MIs):
+
+Lagrange multiplier (@sorbom_model_1989) - approximation of the reduction of $\chi^2$ if a single constrained parameter is freely estimated
+
+* Test of local fit
+* One parameter at a time
+
+Constrained parameters in CFA: 
+
+* Factor cross-loadings
+* Residual correlations
+
+```{r, out.width = "50%", echo=F}
+knitr::include_graphics(here::here("figs", "residual_correlation.png"))
+```
+
+* Some of the covariation of e1 and e2 is due to sources other than the common factor
+* Reasons: method effects, item wording, acquiescence, social desirability, unaccounted theoretical common causes
+
+### Step 8
+
+**Identifying the mean structure (optional)**
+
+```{r, out.width = "50%", echo=F}
+knitr::include_graphics(here::here("figs", "meanstructure.png"))
+```
+
+The formal expression including item intercepts:
+
+$$
+\begin{split}
+y_1=\tau_1+\lambda_1\eta+\epsilon_1 \\
+y_2=\tau_2+\lambda_2\eta+\epsilon_2 \\
+y_3=\tau_3+\lambda_3\eta+\epsilon_3 \\
+\end{split}
+$$
+
+Means of the indicators can be reproduced by the intercept, factor loading, and latent mean estimates
+
+```{r, out.width = "40%", echo=F, fig.align='left'}
+knitr::include_graphics(here::here("figs", "meanstructure_formula.png"))
+```
+
+Identifying the mean structure:
+
+* Fixing the intercept of the reference indicator to zero
+* Fixing the latent mean to zero
+
+
+## CFA - Universalism
 
 ### Step 1
 
@@ -136,7 +265,7 @@ Tolerance: Acceptance and understanding of those who are different from oneself
 In order to measure this attitude construct, three questions (items) were created in ESS 7 (2014) and queried in various countries (e.g. Czech Republic, Germany, Great Britain).
 
 | Name    | Label                                                                  | Construct    |
-|---------|------------------------------------------------------------------------|--------------|
+|-------------|-----------------------------------------------|-------------|
 | ipeqopt | Important that people are treated equally and have equal opportunities | Universalism |
 | ipudrst | Important to understand different people                               | Universalism |
 | impenv  | Important to care for nature and environment                           | Universalism |
@@ -145,7 +274,7 @@ In order to measure this attitude construct, three questions (items) were create
 
 Indicators are "effects" of the latent variable and therefore we specify a reflective measurement model
 
-```{r, echo=F, fig.align='center'}
+```{r, echo=F, out.width = "50%"}
 cfa(
   model = "Universalism =~ ipeqopt + ipudrst + impenv",
   data = ESS07,
@@ -158,9 +287,9 @@ cfa(
     layout = "tree", 
     edge.color = "black", 
     intercepts = F, 
-    sizeMan = 8, 
-    sizeLat = 10, 
-    edge.label.cex = 0.6,
+    sizeMan = 10, 
+    sizeLat = 12, 
+    edge.label.cex = 0.8,
     nCharEdges = 30,
     nCharNodes = 50
   )
@@ -180,12 +309,17 @@ The syntax commands for specifying a lavaan model:
 | intercept                  | \~1      | intercept          |
 
 ```{r}
-universalism <- "uni =~ ipeqopt + ipudrst + impenv"
+universalism <- "Universalism =~ ipeqopt + ipudrst + impenv"
 ```
 
 Lavaan automatically uses the reference indicator method, so one indicator's factual loading is fixed at 1. Accordingly, the variance of the latent factor is estimated.
 
-```{r, echo=F, fig.align='center'}
+In Lavaan, however, it is also very easy to use the fixed factor method, i.e. to fix the variance of the latent factor to 1. This allows all factor loadings to be freely estimated.
+
+```{r, echo=F, out.width = "60%"}
+# optional for better display
+par(mfrow=c(1,2))
+
 cfa(
   model = "Universalism =~ ipeqopt + ipudrst + impenv",
   data = ESS07,
@@ -198,18 +332,14 @@ cfa(
     layout = "tree", 
     edge.color = "black", 
     intercepts = F, 
-    sizeMan = 8, 
-    sizeLat = 10, 
-    edge.label.cex = 0.6,
+    sizeMan = 10, 
+    sizeLat = 12, 
+    edge.label.cex = 1,
     nCharEdges = 30,
     nCharNodes = 50,
     edgeLabels = c("1.00", "", "")
   )
-```
 
-In Lavaan, however, it is also very easy to use the fixed factor method, i.e. to fix the variance of the latent factor to 1. This allows all factor loadings to be freely estimated.
-
-```{r, echo=F, fig.align='center'}
 cfa(
   model = "Universalism =~ NA*ipeqopt + ipudrst + impenv
            Universalism ~~ 1*Universalism",
@@ -223,9 +353,9 @@ cfa(
     layout = "tree", 
     edge.color = "black", 
     intercepts = F, 
-    sizeMan = 8, 
-    sizeLat = 10, 
-    edge.label.cex = 0.6,
+    sizeMan = 10, 
+    sizeLat = 12, 
+    edge.label.cex = 1,
     nCharEdges = 30,
     nCharNodes = 50,
     edgeLabels = c("", "", "", "1.00")
@@ -237,7 +367,7 @@ This requires the use of labels, i.e. the labeling of individual parameters in o
 Reference indicator method:
 
 ```{r}
-universalism <- "uni =~ 1*ipeqopt + ipudrst + impenv"
+universalism <- "Universalism =~ 1*ipeqopt + ipudrst + impenv"
 ```
 
 Fixed factor method:
@@ -245,18 +375,22 @@ Fixed factor method:
 ```{r}
 universalism <- "
 # specification of the measurement model
-uni =~ NA*ipeqopt + ipudrst + impenv
+Universalism =~ NA*ipeqopt + ipudrst + impenv
 
 # specification of the variance
-uni ~~ 1*uni
+Universalism ~~ 1*Universalism
 "
 ```
 
-Freely estimate the factor loading of the first indicator by NA\*ipeqopt and fix the variance of the latent factor by 1\*uni. The variance of a variable is specified as covariance with itself, hence uni \~\~ uni. In the end we get uni \~\~ 1\*uni
+Freely estimate the factor loading of the first indicator by NA\*ipeqopt and fix the variance of the latent factor by 1\*Universalism The variance of a variable is specified as covariance with itself, hence Universalism \~\~ Universalism In the end we get Universalism \~\~ 1\*Universalism
 
 ### Step 4
 
 Now let's get an overview of the properties of our variables. First, let's look at the descriptive statistics of our items to gain knowledge of missing values, central tendency properties, variability, and distribution.
+
+It is possible to choose between:
+
+Mardia's test ("mardia"), Henze-Zirkler's test ("hz"), Royston's test ("royston"), Doornik-Hansen's test ("dh") and E-statistic ("energy"). Default is Henze-Zirkler's test.
 
 ```{r}
 ESS07 %>% 
@@ -266,9 +400,54 @@ ESS07 %>%
   export_table(table_width = 1, digits = 3)
 ```
 
-This shows that the individual variables are not normally distributed and that there is no multivariate normal distribution (Henze-Zirkler value). So, we don't have any missing values in our example dataset and a more than sufficient sample size. In addition, the variables show a right skewed distribution and a moderate variance.
 
-Due to the missing multivariate normal distribution, we use the MLR estimator. If we were dealing with missing values, we would use Full Information Maximum Likelihood (FIML) as the estimation strategy.
+
+So, we don't have any missing values in our example dataset and a more than sufficient sample size. Nevertheless, the variables show a right skewed distribution. Consequently, the individual variables are not normally distributed and there is no multivariate normal distribution (Henze-Zirkler value). 
+
+We can also validate this finding graphically.
+
+The Q-Q plot, where “Q” stands for quantile, is a widely used graphical approach to evaluate the agreement between two probability distributions. Each axis refers to the quantiles of probability distributions to be compared, where one of the axes indicates theoretical quantiles (hypothesized quantiles) and the other indicates the observed quantiles. If the observed data fit hypothesized distribution, the points in the Q-Q plot will approximately lie on the line y = x.
+
+Since all incoming variables have a right-skewed distribution, this fact is not surprising. Thus, we can conclude that problems with multivariate normality arise from the skewed distribution of the three variables.
+
+```{r, out.width="70%"}
+plots <- ESS07 %>% 
+  select(ipeqopt, ipudrst, impenv) %>% 
+  mvn(univariatePlot = "histogram", multivariatePlot = "qq")
+```
+
+As a result, we can conclude that this data set does not satisfy MVN assumption based on the fact that the two test results are against it and the chi-square Q-Q plot indicates departures from multivariate normal distribution.
+
+**Due to the missing multivariate normal distribution, we use the MLR estimator. If we were dealing with missing values, we would use Full Information Maximum Likelihood (FIML) as the estimation strategy.**
+
+Next, we want to check whether the items are sufficiently correlated with each other. A sufficient correlation of the items would support our assumption of a reflective factor, since it would be reasonable that the common variance of the variables is caused by the latent factor.
+
+```{r}
+ESS07 %>% 
+  select(ipeqopt, ipudrst, impenv) %>% 
+  correlation() %>% 
+  summary() %>% 
+  # optional for better display
+  export_table(table_width = 1, digits = 2)
+```
+
+There is sufficient correlation, so it is initially plausible that a latent factor in the background would explain the common variance.
+
+Finally, we want to deal with the anticipated itemscale. Here we are primarily interested in the various measures of internal consistencies.
+
+```{r}
+ESS07 %>% 
+  select(ipeqopt, ipudrst, impenv) %>% 
+  principal_components(n = 1) %>%
+  check_itemscale() %>% 
+  # optional for better display
+  export_table(table_width = 1, digits = 2)
+```
+* Item difficulty should range between 0.2 and 0.8. Ideal value is p+(1-p)/2 (which mostly is between 0.5 and 0.8). Lower values are a signal for more difficult items, while higher values close to one are a sign for easier items. The ideal value for item difficulty is p + (1 - p) / 2, where p = 1 / max(x). In most cases, the ideal item difficulty lies between 0.5 and 0.8.
+* For item discrimination, acceptable values are 0.20 or higher; the closer to 1.00 the better. The absolute value of the item discrimination indices should be above 0.1. An index between 0.1 and 0.3 is considered as "fair", while an index above 0.3 (or below -0.3) is "good". Items with low discrimination indices are often ambiguously worded and should be examined. Items with negative indices should be examined to determine why a negative value was obtained (e.g. reversed answer categories regarding positive and negative poles).
+* Mean inter-item-correlation is an alternative measure to indicate acceptability. Satisfactory range lies between 0.2 and 0.4. “Ideally, the average inter-item correlation for a set of items should be between .20 and .40, suggesting that while the items are reasonably homogenous, they do contain sufficiently unique variance so as to not be isomorphic with each other. When values are lower than .20, then the items may not be representative of the same content domain. If values are higher than .40, the items may be only capturing a small bandwidth of the construct.” @michalos_inter-item_2014
+
+The selected items can be plausibly mapped together in one scale.
 
 ### Step 5
 
@@ -284,10 +463,11 @@ universalism_fit <- cfa(
 )
 ```
 
-Now we can look at the estimated model. To do this, we use the summary() function. 
+Now we can look at the estimated model. To do this, we use the summary() function.
 
-Fit.measures = T shows us the most important fit measurements of our model and thus the fit to the data. 
-Standardized = T shows us standardized values in the output and rsquare shows us the explained variance of the dependent variable.
+* fit.measures = T - shows us the most important fit measurements of our model 
+* standardized = T - shows us standardized values in the output
+* rsquare = T - shows us the explained variance of the dependent variables
 
 ```{r}
 summary(
@@ -302,46 +482,41 @@ Since we estimated a model with three indicators, it is a saturated model, i.e. 
 
 This allows the following graphic to be created with standardized factor loadings.
 
-```{r, fig.align='center', results='hide'}
+```{r, results='hide', out.width="60%"}
+# optional for better display
+par(mfrow=c(1,2))
+
 universalism_plot <- universalism_fit %>% 
   semPaths(
     whatLabels = "std", 
     style = "mx", 
     layout = "tree", 
     edge.color = "black", 
-    intercepts = F, 
+    intercepts = F,
+    sizeMan = 10, 
+    sizeLat = 12, 
+    edge.label.cex = 1,
     nCharNodes = 50
   ) 
-```
 
-The semptools package also allows us to easily add additional information to our graphics ( https://cran.r-project.org/web/packages/semptools/vignettes/semptools.html). Here I have also included the degree of statistical significance.
-
-```{r, fig.align='center'}
 universalism_plot %>% 
   mark_sig(universalism_fit) %>% 
   plot()
 ```
 
-### Step 6:
+The semptools package also allows us to easily add additional information to our graphics ( <https://cran.r-project.org/web/packages/semptools/vignettes/semptools.html>). Here I have also included the level of statistical significance.
+
+### Step 6
 
 A look at the fit measures shows us that the model is saturated due to the 0 degrees of freedom and thus achieves a perfect data fit.
 
-### Step 7:
+### Step 7
 
-In the following we want to check whether the selected items represent a factor. It can be seen that the factor loadings all reach the cut off of >= 0.4 and thus, in combination with the fit indices, there is an appropriate measurement model.
+In the following we want to check whether the selected items represent a factor. It can be seen that the factor loadings all reach the cut off of $\ge$ 0.4 and thus, in combination with the fit indices, there is an appropriate measurement model.
 
 If there are recognizable misfits, we can access the modification indices.
 
-Modification indices (MIs) = Approximation of the reduction of X2 if a single constrained parameter is freely estimated
-
-Constrained parameters in CFA: 
-- Factor cross-loadings
-- Residual correlations
-
---> Test of local fit
---> One parameter at a time
-
-```{r}
+```{r, include=F}
 universalism_fit %>% 
   modificationindices(standardized = T, sort. = T)
 ```
@@ -350,26 +525,32 @@ Accordingly, there are no modification options, since the model has just been id
 
 So let's look at two more models of Theory of Basic Human Values from the ESS07.
 
-## CFA model of Tradition/Conformity
+## CFA - Tradition/Conformity
 
-### Step 1:
+### Step 1
 
-| Name    | Label                                                 | Construct    |
-|---------|-------------------------------------------------------|--------------|
-| ipmodst | Important to be humble and modest, not draw attention | Tradition    |
-| imptrad | Important to follow traditions and customs            | Tradition    |
-| ipfrule | Important to care for nature and environment          | Conformity   |
-| ipbhprp | Important to behave properly                          | Conformity   |
+Tradition: Maintaining and preserving cultural, family or religious traditions
 
-### Step 2:
+Conformity-Interpersonal: Avoidance of upsetting or harming other people
 
-Indicators are “effects” of the latent variable and therefore we specify a reflective measurement model.
+Conformity-Rules: Compliance with rules, laws, and formal obligations
 
-### Step 3:
+| Name    | Label                                                 | Construct  |
+|-------------|----------------------------------------------|-------------|
+| ipmodst | Important to be humble and modest, not draw attention | Tradition  |
+| imptrad | Important to follow traditions and customs            | Tradition  |
+| ipfrule | Important to care for nature and environment          | Conformity |
+| ipbhprp | Important to behave properly                          | Conformity |
+
+### Step 2
+
+Indicators are "effects" of the latent variable and therefore we specify a reflective measurement model.
+
+### Step 3
 
 We use the reference indicator method again to calculate the model.
 
-### Step 4:
+### Step 4
 
 ```{r}
 ESS07 %>% 
@@ -381,7 +562,28 @@ ESS07 %>%
 
 The variables are scaled metrically on a scale from 0 to 6 and distributed skewed to the right. In addition, there is neither a univariate nor a multivariate normal distribution.
 
-### Step 5:
+```{r}
+ESS07 %>% 
+  select(ipmodst, imptrad, ipfrule, ipbhprp) %>% 
+  correlation() %>% 
+  summary() %>% 
+  # optional for better display
+  export_table(table_width = 1, digits = 2)
+```
+
+There is sufficient correlation, so it is initially plausible that a latent factor in the background would explain the common variance.
+
+```{r}
+ESS07 %>%
+  select(ipmodst, imptrad, ipfrule, ipbhprp) %>% 
+  principal_components(n = 1) %>% 
+  check_itemscale() %>%
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
+The selected items can be plausibly mapped together in one scale.
+
+### Step 5
 
 ```{r}
 tradition_conformity_fit <- cfa(
@@ -397,18 +599,18 @@ tradition_conformity_fit <- cfa(
 summary(
   object = tradition_conformity_fit,
   fit.measures = T,
-  standardized = T,
-  rsquare = T
+  standardized = T
+  # rsquare = T
 )
 ```
 
 The model is identified with two degrees of freedom.
 
-### Step 6:
+### Step 6
 
 The fit indices show a good fit to the data. All fit indices are below their cut offs.
 
-### Step 7:
+### Step 7
 
 In this model, the factor loading of the item ipmodst is clearly misfit, since the factor loading cut-off of 0.4 is not reached.
 
@@ -430,33 +632,33 @@ tradition_conformity_fit2 <- cfa(
 summary(
   object = tradition_conformity_fit2,
   fit.measures = T,
-  standardized = T,
-  rsquare = T
+  standardized = T
+  # rsquare = T
 )
 ```
 
 This makes the measurement model suitable for further use.
 
-## CFA model Perceived Threat
+## CFA - Perceived Threat
 
-### Step 1:
+### Step 1
 
 | Name    | Label                                                                | Construct        |
-|---------|----------------------------------------------------------------------|------------------|
+|-------------|----------------------------------------------|-------------|
 | imbgeco | Immigration bad or good for country's economy                        | Perceived threat |
 | imueclt | Country's cultural life undermined or enriched by immigrants         | Perceived threat |
 | imtcjob | Immigrants take jobs away in country or create new jobs              | Perceived threat |
 | rlgueim | Religious beliefs and practices undermined or enriched by immigrants | Perceived threat |
 
-### Step 2:
+### Step 2
 
-Indicators are “effects” of the latent variable and therefore we specify a reflective measurement model
+Indicators are "effects" of the latent variable and therefore we specify a reflective measurement model
 
-### Step 3:
+### Step 3
 
 We use the reference indicator method again to calculate the model.
 
-### Step 4:
+### Step 4
 
 ```{r}
 ESS07 %>%
@@ -468,7 +670,29 @@ ESS07 %>%
 
 The variables are scaled metrically on a scale from 0 to 10. Nevertheless, there is neither a univariate nor a multivariate normal distribution.
 
-### Step 5:
+```{r}
+ESS07 %>% 
+  select(imbgeco, imueclt, imtcjob, rlgueim) %>% 
+  correlation() %>% 
+  summary() %>% 
+  # optional for better display
+  export_table(table_width = 1, digits = 2)
+```
+
+There is sufficient correlation, so it is initially plausible that a latent factor in the background would explain the common variance.
+
+```{r}
+ESS07 %>%
+  select(imbgeco, imueclt, imtcjob, rlgueim) %>% 
+  principal_components(n = 1) %>% 
+  check_itemscale() %>%
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
+
+The selected items can be plausibly mapped together in one scale.
+
+### Step 5
 
 ```{r}
 perceived_threat_fit <- cfa(
@@ -484,18 +708,18 @@ perceived_threat_fit <- cfa(
 summary(
   object = perceived_threat_fit,
   fit.measures = T,
-  standardized = T,
-  rsquare = T
+  standardized = T
+  # rsquare = T
 )
 ```
 
 The model is identified with two degrees of freedom.
 
-### Step 6:
+### Step 6
 
-The model shows a clear misspecification of the model for the RMSEA indice.
+The model shows a clear misspecification by the RMSEA index.
 
-### Step 7:
+### Step 7
 
 The factor loadings all show sufficient loading. So we can immediately devote ourselves to the modification indices in order to understand the misspecification evident in the RMSEA.
 
@@ -503,6 +727,10 @@ The factor loadings all show sufficient loading. So we can immediately devote ou
 perceived_threat_fit %>% 
   modificationindices(standardized = T, sort. = T)
 ```
+
+* Column op indicates the operator or type of parameter
+* Column mi contains the modification indices
+* Column epc contains the expected parameter change if the parameter was estimated
 
 The modification indices tell us that adjusting the residual covariance between items imueclt and rlgueim would have the largest effect on model fitting (in terms of the chi-square test statistic).
 
@@ -530,12 +758,14 @@ perceived_threat_fit2 <- cfa(
 summary(
   object = perceived_threat_fit2,
   fit.measures = T,
-  standardized = T,
-  rsquare = T
+  standardized = T
+  # rsquare = T
 )
 ```
 
-```{r, fig.align='center'}
+The RMSEA is then back in our anticipated cut-off area and we can continue working with the measurement model.
+
+```{r, out.width="80%"}
 perceived_threat_fit2 %>% 
   semPaths(
     whatLabels = "std", 
@@ -543,14 +773,14 @@ perceived_threat_fit2 %>%
     layout = "tree", 
     edge.color = "black", 
     intercepts = F, 
+    sizeMan = 9, 
+    sizeLat = 10, 
+    edge.label.cex = 0.7,
     nCharNodes = 50
   ) 
 ```
 
-
-The RMSEA is then back in our anticipated cut-off area and we can continue working with the measurement model.
-
-### Step 8:
+### Step 8
 
 Finally, we want to display the mean structure of our model.
 
@@ -575,8 +805,8 @@ perceived_threat_mean <- cfa(
 summary(
   object = perceived_threat_mean,
   fit.measures = T,
-  standardized = T,
-  rsquare = T
+  standardized = T
+  # rsquare = T
 )
 ```
 
@@ -586,60 +816,720 @@ summary(
 
 Are measurements actually comparable across groups/time?
 
-Definition:
-Measurement invariance is a property of a measurement instrument, implying that the instrument measures the same concept in the same way across subgroups of respondents or time points of data assessment.
+Commen core: Measurement invariance is a property of a measurement instrument, implying that the instrument measures the same concept in the same way across subgroups of respondents or time points of data assessment.
 
-Measurement invariance (MI) can be assessed with multiple-group CFA (MGCFA). Impose equality constrains on measurement parameters across groups/time (“fix them to be equal”). 
+Measurement invariance (MI) can be assessed with multiple-group CFA (MGCFA). Impose equality constrains on measurement parameters across groups/time ("fix them to be equal").
 
-Use a sequential testing strategy to test different levels of measurement invariance:
-- Configural MI
-- Metric (weak) MI
-- Scalar (strong) MI
-- Strict MI
-- ...
+Use a sequential testing strategy to test different levels of measurement invariance: 
+
+* Checking whether the models in the individual groups can be measured properly
+* Configural MI 
+* Metric (weak) MI 
+* Scalar (strong) MI 
+* Strict MI 
+* ...
+
+```{r, out.width = "70%", echo=F}
+knitr::include_graphics(here::here("figs", "measurement_equivalence.png"))
+```
 
 **Configural measurement invariance**
 
-Equality constraints:
+*Equality constraints:*
+
 Equal structure: pattern of factors and relationships of indicators and factors is equal across groups
 
-Implications:
+*Implications:* 
+
 Same construct exists across groups; no comparisons of estimates!
+
+```{r, out.width = "50%", echo=F}
+knitr::include_graphics(here::here("figs", "configural_mi.png"))
+```
 
 **Metric measurement invariance**
 
-Equality constraints:
+*Equality constraints:*
+
 Equal structure + equal factor loadings across groups
 
-$\lambda^1 = \lambda^2 = \lambda^G$
+$$\lambda^1 = \lambda^2 = \lambda^G$$
+
+*Implications:* 
+
+Respondents from different groups attribute the same meaning to a construct; comparisons of regression coefficients, correlations, variances are valid.
+
+```{r, out.width = "50%", echo=F}
+knitr::include_graphics(here::here("figs", "metric_mi.png"))
+```
 
 **Scalar measurement invariance**
 
-Equality constraints:
+*Equality constraints:*
+
 Equal structure + equal factor loadings + equal intercepts across groups
 
-$\lambda^1 = \lambda^2 = \lambda^G$
+$$
+\begin{split}
+\lambda^1 = \lambda^2 = \lambda^G \\
+\tau^1 = \tau^2 = \tau^G
+\end{split}
+$$
 
-$\tau^1 = \tau^2 = \tau^G$
+*Implications:* 
 
-Implications:
-Respondents from different groups “use” the scale in a similar manner; comparison of latent means are valid
+Respondents from different groups "use" the scale in a similar manner; comparison of latent means are valid
+
+```{r, out.width = "50%", echo=F}
+knitr::include_graphics(here::here("figs", "scalar_mi.png"))
+```
 
 **Result**
 
-- Configural invariance: same structure across groups
-- Metric invariance: factor loadings set equal across groups
-- Scalar invariance: factor loadings and intercepts set equal across groups
-
+* Configural invariance: same structure across groups
+* Metric invariance: factor loadings set equal across groups
+* Scalar invariance: factor loadings and intercepts set equal across groups
 
 How decide which level of measurement invariance is supported by the data?
 
-1. Consecutively estimate the configural, metric, and scalar invariance models
-2. Inspect model fit as usual: $\chi^2$ (df), CFI, RMSEA
-3. Inspect model fit differences between models: 
-- $\chi^2 / \Delta\chi^2 (df/\Delta df)$
-- $CFI/\Delta CFI;RMSEA/\Delta RMSEA$
+1.  Consecutively estimate the configural, metric, and scalar invariance models
+2.  Inspect model fit as usual: $\chi^2$ (df), CFI, RMSEA
+3.  Inspect model fit differences between models:
+    + $\chi^2 / \Delta\chi^2 (df/\Delta df)$
+    + $CFI/\Delta CFI;RMSEA/\Delta RMSEA$
+
+**Difference test for two nested models (m1 and m2)**
+
+$\chi^2_d=\chi^2_{m1}-\chi^2_{m2}\ with\ df_{m1}-df_{m2}$
+
+* m1 is nested in m2 if m1 can be derived from m2 by fixing or removing free parameters
+* m1 is the simpler model (it has more df)
+* $\chi^2_d$ tells us how much m1 fits worse than m2
+
+Traditional $\chi^2$ difference testing is sensitive to sample size!
+
+Guidelines using alternative fit indices - @chen_sensitivity_2007: differences between a constrained model (m1) and a more liberal model (m2) are considered irrelevant when
+
+N > 300: $CFI(m1)-CFI(m2)\leq-.10\ and\ RMSEA(m1)-RMSEA(m2)\leq.015$
+
+N $\leq$ 300: $CFI(m1)-CFI(m2)\leq-.005\ and\ RMSEA(m1)-RMSEA(m2)\leq.010$
+
+## MI - Universalism
+
+Do the mean levels of endorsement of universalism values differ across the CZ, DE, and GB?
+
+```{r, out.width = "70%", echo=F}
+knitr::include_graphics(here::here("figs", "mgcfa_showcase.png"))
+```
+
+### Individual measurement for each group
+
+Before we can approach a common model across all groups, we have to check whether the envisaged measurement model can be measured properly in each group.
+
+```{r}
+ESS07_countries <- group_split(ESS07, country) %>% 
+  # optional for better display
+  set_names(unique(ESS07$country))
+```
+
+We have now split the entire data set into three individual data sets according to the respective countries. These data sets are now checked individually as a measurement model.
+
+**Reference indicator method**
+
+```{r}
+universalism_fit_countries <- ESS07_countries %>% 
+  map(~ cfa(
+    model = "Universalism =~ ipeqopt + ipudrst + impenv", 
+    data = .,
+    estimator = "MLR",
+    # optional if there are missing values
+    missing = "fiml.x"
+    ))
+```
+
+```{r}
+universalism_fit_countries %>% 
+  map(~ summary(
+    object = .,
+    fit.measures = T,
+    standardized = T
+    # rsquare = T
+  ))
+```
+
+In all countries the measurement model reaches an acceptable form. In the next step, we can calculate all countries without constraints in a model and see whether there is an adequate fit here as well.
+
+**Fixed factor method**
+
+```{r}
+universalism_fit_countries2 <- ESS07_countries %>% 
+  map(~ cfa(
+    model = "
+    uni =~ NA*ipeqopt + ipudrst + impenv
+    uni ~~ 1*uni
+    ", 
+    data = .,
+    estimator = "MLR",
+    # optional if there are missing values
+    missing = "fiml.x"
+    ))
+```
+
+```{r}
+universalism_fit_countries2 %>% 
+  map(~ summary(
+    object = .,
+    fit.measures = T,
+    standardized = T
+    # rsquare = T
+  ))
+```
 
 
-## References
+### Configural model
 
+Since the configurale model has no constraints, we only have to name the groups to be compared. This happens in Lavaan mainly via the function argument group = "grouping_variable". In the more detailed form, we can also name the groups when specifying the model.
+
+**Reference indicator method**
+
+```{r}
+universalism_fit_config <- cfa(
+  model = "
+    group: [CZ]
+    uni =~ ipeqopt + ipudrst + impenv
+    group: [DE]
+    uni =~ ipeqopt + ipudrst + impenv
+    group: [GB]
+    uni =~ ipeqopt + ipudrst + impenv
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+Lavaan carries out the model specification of the groups with the argument group = "grouping_variable" automatically, unless we want to carry out our own specification. The result is the same.
+
+```{r}
+universalism_fit_config <- cfa(
+  model = "uni =~ ipeqopt + ipudrst + impenv",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+Nevertheless, it makes sense to keep control of the desired restrictions at the beginning and also in the further course.
+
+```{r}
+summary(
+  object = universalism_fit_config,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+The mean structure is estimated as the default: intercepts are unconstrained, latent means are fixed to zero.
+
+**Result:**
+
+Again, we see that the model works well. 
+
+* All parameters differ across groups, the latent means are fixed to zero
+* The model is just identified
+
+**Fixed factor method**
+
+```{r}
+universalism_fit_config2 <- cfa(
+  model = "
+    group: [CZ]
+    uni =~ NA*ipeqopt + ipudrst + impenv
+    uni ~~ 1*uni
+    group: [DE]
+    uni =~ NA*ipeqopt + ipudrst + impenv
+    uni ~~ 1*uni
+    group: [GB]
+    uni =~ NA*ipeqopt + ipudrst + impenv
+    uni ~~ 1*uni
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = universalism_fit_config2,
+  fit.measures = T,
+  standardized = T
+)
+```
+
+
+### Metric model
+
+Next we want to check whether there is also a metric measurement invariance.
+
+Since we have to equate the factor loadings for the metric measurement invariance (constrains), we have to work with labels in front of the parameters.
+
+**Reference indicator method**
+
+```{r}
+universalism_fit_metric <- cfa(
+    model = "
+    group: [CZ]
+    uni =~ ipeqopt + a*ipudrst + b*impenv
+    group: [DE]
+    uni =~ ipeqopt + a*ipudrst + b*impenv
+    group: [GB]
+    uni =~ ipeqopt + a*ipudrst + b*impenv
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+Here it can be clearly seen that we use the reference indicator methods and that only the factor loadings of the second and third items have to be equated across the groups. For the first item we use the label "a" across all groups and for the second item we use the label "b" to indicate to lavaan that these parameters are assumed to have the same value across the groups when calculating the model.
+
+Here, too, the model specification can be simplified as required with the argument group.equal = "loadings".
+
+```{r}
+universalism_fit_metric <- cfa(
+  model = "uni =~ ipeqopt + ipudrst + impenv",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  group.equal = "loadings",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+However, Lavaan automatically assigns the labels .p[number]., although the effect is the same.
+
+```{r}
+summary(
+  object = universalism_fit_metric,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+**Results:**
+
+* The model has a good model fit and all factor loadings have sufficient loading.
+
+**Fixed factor method**
+
+```{r}
+universalism_fit_metric2 <- cfa(
+    model = "
+    group: [CZ]
+    uni =~ NA*ipeqopt + a*ipeqopt + b*ipudrst + c*impenv
+    uni ~~ 1*uni
+    group: [DE]
+    uni =~ NA*ipeqopt + a*ipeqopt + b*ipudrst + c*impenv
+    uni ~~ 1*uni
+    group: [GB]
+    uni =~ NA*ipeqopt + a*ipeqopt + b*ipudrst + c*impenv
+    uni ~~ 1*uni
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = universalism_fit_metric2,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Scalar model
+
+As a final step, we want to see if there is scalar measurement invariance across groups.
+
+For this we have to equate the intercepts in the model specification. As previously shown, Lavaan works syntactically with variable~1 in order to be able to select the intercept of the respective item. In the following we can equate the Intercepts value with a label across all groups.
+
+**Reference indicator method**
+
+```{r}
+universalism_fit_scalar <- cfa(
+    model = "
+    group: [CZ]
+    uni =~ ipeqopt + a*ipudrst + b*impenv
+    ipeqopt ~ c*1
+    ipudrst ~ d*1
+    impenv ~ e*1
+    
+    group: [DE]
+    uni =~ ipeqopt + a*ipudrst + b*impenv
+    ipeqopt ~ c*1
+    ipudrst ~ d*1
+    impenv ~ e*1
+    
+    group: [GB]
+    uni =~ ipeqopt + a*ipudrst + b*impenv
+    ipeqopt ~ c*1
+    ipudrst ~ d*1
+    impenv ~ e*1
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+Again, there is a function argument that allows a simple calculation of the scalar measurement invariance. If we add intercepts in the argument group.equal = c("loadings", "intercepts"), all intercepts are equated across the groups.
+
+```{r}
+universalism_fit_scalar <- cfa(
+  model = "uni =~ ipeqopt + ipudrst + impenv",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  group.equal = c("loadings", "intercepts"),
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = universalism_fit_scalar,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+**Results:**
+
+* The latent means have been estimated in group 2 and 3 and fixed in group 1
+* Acceptable model fit
+
+**Fixed factor method**
+
+```{r}
+universalism_fit_scalar2 <- cfa(
+    model = "
+    group: [CZ]
+    uni =~ NA*ipeqopt + a*ipeqopt + b*ipudrst + c*impenv
+    ipeqopt ~ d*1
+    ipudrst ~ e*1
+    impenv ~ f*1
+    uni ~ 0*1
+    uni ~~ 1*uni
+    
+    group: [DE]
+    uni =~ NA*ipeqopt + a*ipeqopt + b*ipudrst + c*impenv
+    ipeqopt ~ d*1
+    ipudrst ~ e*1
+    impenv ~ f*1
+    uni ~ NA*1
+    uni ~~ 1*uni
+    
+    group: [GB]
+    uni =~ NA*ipeqopt + a*ipeqopt + b*ipudrst + c*impenv
+    ipeqopt ~ d*1
+    ipudrst ~ e*1
+    impenv ~ f*1
+    uni ~ NA*1
+    uni ~~ 1*uni
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = universalism_fit_scalar2,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Comparing fit statistics
+
+Finally, we want to check whether the respective models with tightened measurement invariance do not show any significant deterioration in the data fitting and thus do not falsify the assumption of the corresponding measurement invariances.
+
+```{r, warning=F}
+compFit.universalism <- compareFit(
+  scalar = universalism_fit_scalar,
+  metric = universalism_fit_metric,
+  config = universalism_fit_config,
+  argsLRT = list(method = "satorra.bentler.2001")
+)
+```
+
+```{r}
+summary(
+  object = compFit.universalism, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr", "aic", "bic")
+  ) 
+```
+
+**Results:**
+
+* $\chi^2$ differences are significant = The different levels of measurement invariance deviate significantly from each other and show a poorer fit to the data
+* Alternative fit indices also show that there is no metric or scalar measurement invariance
+
+**Fixed factor method**
+
+```{r, warning=F}
+compFit.universalism2 <- compareFit(
+  scalar = universalism_fit_scalar2,
+  metric = universalism_fit_metric2,
+  config = universalism_fit_config2,
+  argsLRT = list(method = "satorra.bentler.2001")
+)
+```
+
+```{r}
+summary(
+  object = compFit.universalism2, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr", "aic", "bic")
+  ) 
+```
+
+# Partial measurement invariance
+
+Partial measurement invariance @byrne_testing_1989
+
+* In contrast to “full” MI only a few parameters are kept invariant
+* Two indicators with invariant loadings and intercepts are sufficient for valid latent mean comparisons
+    + Step 1: identify misspecified equality constraints and relax them (-> modification indices)
+    + Step 2: re-estimate and compare with the previous (full) MI models
+
+
+## Partial MI - Universalism
+
+Since we only calculate three factor loadings in our measurement model and we only have a partial measurement invariance if two factor loadings are measurement invariant, we have to use the fixed factor method to calculate all factor loadings.
+
+* The lavTestScore command contains the score test results informing about which contraints are troublesome
+* The command parTable tells us which labels are used for each parameter of the model
+
+```{r, warning=F}
+universalism_fit_metric2 %>% 
+  lavTestScore() %>% 
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
+
+* Total score test: $\chi^2$ reduction if all constraints were removed
+* Univariate score tests: $\chi^2$ reduction for removing a single constraint
+
+.p2. == .p13. -> Constraint with the largest $\chi^2$ reduction
+
+What do the parameter labels (.p2. & .p13.) mean?
+
+```{r}
+universalism_fit_metric2 %>% 
+  parTable() %>% 
+  select(lhs, op, rhs, group, label, plabel, est, se) %>% 
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
+
+Obviously, we achieve the largest $\chi^2$ reduction in the metric invariance model by freely calculating the factor loading of item ipudrst, because there is a clear difference between group CZ and DE.
+
+### Partial metric invariance
+
+```{r}
+universalism_fit_metric_partial <- cfa(
+    model = "
+    group: [CZ]
+    uni =~ NA*ipeqopt + a*ipeqopt + NA*ipudrst + c*impenv
+    uni ~~ 1*uni
+    group: [DE]
+    uni =~ NA*ipeqopt + a*ipeqopt + NA*ipudrst + c*impenv
+    uni ~~ 1*uni
+    group: [GB]
+    uni =~ NA*ipeqopt + a*ipeqopt + NA*ipudrst + c*impenv
+    uni ~~ 1*uni
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  universalism_fit_metric_partial,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+**Comparing fit statistics**
+
+Finally, we want to check whether the respective models with tightened measurement invariance do not show any significant deterioration in the data fitting and thus do not falsify the assumption of the corresponding measurement invariances.
+
+```{r, warning=F}
+compFit.universalism2 <- compareFit(
+  # scalar = universalism_fit_scalar2,
+  metric = universalism_fit_metric_partial,
+  config = universalism_fit_config2,
+  argsLRT = list(method = "satorra.bentler.2001")
+)
+```
+
+```{r}
+summary(
+  object = compFit.universalism2, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr", "aic", "bic")
+  ) 
+```
+CFI and RMSEA differences are too large according to @chen_sensitivity_2007, but overall acceptable. As a result, it is due to our consideration whether we have a metric measurement invariance here. It can be argued that the deviation in the CFI and RMSEA is negligible and the measurement model with metric invariance has a very good data fit. In this case we follow this reasoning and check further for scalar measurement invariance.
+
+### Partial scalar invariance
+
+```{r}
+universalism_fit_scalar_partial <- cfa(
+    model = "
+    group: [CZ]
+    uni =~ NA*ipeqopt + a*ipeqopt + NA*ipudrst + c*impenv
+    ipeqopt ~ d*1
+    ipudrst ~ e*1
+    impenv ~ f*1
+    uni ~ 0*1
+    uni ~~ 1*uni
+    
+    group: [DE]
+    uni =~ NA*ipeqopt + a*ipeqopt + NA*ipudrst + c*impenv
+    ipeqopt ~ d*1
+    ipudrst ~ e*1
+    impenv ~ f*1
+    uni ~ NA*1
+    uni ~~ 1*uni
+    
+    group: [GB]
+    uni =~ NA*ipeqopt + a*ipeqopt + NA*ipudrst + c*impenv
+    ipeqopt ~ d*1
+    ipudrst ~ e*1
+    impenv ~ f*1
+    uni ~ NA*1
+    uni ~~ 1*uni
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = universalism_fit_scalar_partial,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+```{r, warning=F}
+compFit.universalism3 <- compareFit(
+  scalar = universalism_fit_scalar_partial,
+  metric = universalism_fit_metric_partial,
+  config = universalism_fit_config2,
+  argsLRT = list(method = "satorra.bentler.2001")
+)
+```
+
+```{r}
+summary(
+  object = compFit.universalism3, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr", "aic", "bic")
+  ) 
+```
+
+This also shows that we have to weigh up a rather critical case. The CFI and RMSEA deteriorate significantly and the fit to the data is also borderline. In this respect, it is a question of the researcher which point of view he wants to represent. As an example, we assume scalar measurement invariance here and consider the relative latent means, although we would rather assume no partial scalar measurement invariance here. In this case we would rather choose to use an approximate method.
+
+**Result**
+
+So we can see that in relation to CZ the countries DE and GB have a significantly higher latent mean (see Intercepts uni).
+
+
+
+# References
+
+
+```{=html}
+<style type="text/css">
+
+TOC {
+  font-size: 4px;
+  color: black; 
+}
+body{ /* Normal  */
+      font-size: 14px;
+  }
+td {  /* Table  */
+  font-size: 8px;
+  text-align: center;
+}
+h1.title {
+  font-size: 24px;
+  font-weight: bold;
+}
+h1 { /* Header 1 */
+  font-size: 22px;
+  font-weight: bold;
+}
+h2 { /* Header 2 */
+    font-size: 20px;
+    font-weight: bold;
+}
+h3 { /* Header 3 */
+  font-size: 16px;
+}
+h4 { /* Header 3 */
+  font-size: 14px;
+}
+code.r{ /* Code block */
+    font-size: 13px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 13px;
+}
+</style>
+```

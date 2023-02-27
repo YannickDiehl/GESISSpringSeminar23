@@ -1,0 +1,665 @@
+---
+title: "GESIS Spring Seminar 23"
+subtitle: "Comparative Social Research with Multi-Group SEM"
+date: "Day 3 - 29.02.2023"
+author: Daniel Seddig, Eldad Davidov, Peter Schmidt, Yannick Diehl
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 3
+    toc_float: true
+toc-title: "Table of Contents"
+bibliography: ../citations/citations.bib
+biblio-style: "apalike"
+link-citations: true
+---
+
+```{r package-options, include=F}
+knitr::opts_chunk$set(comment = "", fig.align='center')
+```
+
+# Packages
+
+```{r setup, results='hide', message=F, warning=F}
+# basic tools 
+library(tidyverse)
+
+# building the models
+library(lavaan)
+library(sirt)
+```
+
+# Data
+
+```{r}
+ESS07 <- read.csv("../data/ESS07.csv")
+```
+
+# Alignment Method
+
+## Approximate rather than exact MI?
+
+MGCFA prodecures for testing MI are often impractical are very restrictive
+
+* All non-target factor loadings in multifactor models are constrained to zero across groups
+* Zero error covariances among the indicator variables across groups
+* CFA model parameters (i.e., factor loadings, intercepts) are exactly equivalent across groups (“exact” approach; e.g., @zercherComparabilityUniversalismValue2015)
+
+Limitations of "traditional" multigroup CFA
+
+**MGCFA procedures for testing MI across are large number of groups often results in:**
+
+Problems establishing of a group-appropriate structure of the configural model
+
+* numerous one-by-one comparisons 
+* time consuming
+* error prone
+
+Poor model fit of the scalar MI model
+
+* large sample sizes
+* small deviations across many groups may amount to misfit
+
+Many large modification indexes
+
+* numerous manual model adjustments
+* time consuming
+* error prone
+
+## Why alignment?
+
+**Goals**
+
+* compare latent variables across groups without constraints for measurement invariance
+* estimate factor means via MGCFA, but...
+    + ...without using equality constraints for factor loadings and intercepts across groups
+    + ...without affecting the comparability of factor means 
+    + ...allowing for approximate measurement invariance
+    
+* allows latent mean comparisons under approximate invariance
+* automates and greatly simplifies tests for invariance across a large number of groups (even as large as 92 groups; see @munckMeasurementInvarianceComparing2018)
+
+**Mathematical basis**
+
+Incorporate a statistical criterion that is able to keep the degree of noninvariance at a minimum
+
+Simplicity function F (total loss function) $F = \Sigma_p\Sigma_{gm<gn}W_{gm,gn}f(\lambda_{pgm}-\lambda_{pgn}) + \Sigma_p\Sigma_{gm<gn}W_{gm,gn}f(\tau_{pgm}-\tau_{pgn})$
+
+weight factor, e.g. $W_{g1,g2}=\sqrt{N_{g1}N_{g2}}$
+
+component loss function, e.g. $f(x)=\sqrt{\sqrt{x^2+0.01}}$ => generalized loss function @robitzschLpLossFunctions2020
+
+Generalized loss function: $f(x)=(x^2+\epsilon)^{p/2}$
+
+* p: power
+    + defines the shape of the loss function
+    + lower values (e.g., p = 0.1 or p = 0.5): few large non-invariant parameters and many approximately invariant parameters (Mplus uses p = 0.5)
+    + higher values (e.g., p = 2): all parameter deviations equally contribute to the aligned means and variances
+* $\epsilon$: necessary for estimation
+    + select a small value $\epsilon>0$
+    + e.g. $\epsilon=0.01$ or $\epsilon=0.001$
+
+## Procedure
+
+### Step 1
+
+Establish a configural model (i.e., the best fitting model)
+
+* No cross-group constraints on factor loadings and intercepts
+* Factor means and factor variances are fixed at 0.00 and 1.00, respectively
+
+Measurement parameters are aligned to obtain a minimal degree of noninvariance without the requirement of equality constraints
+
+* Many small parameter differences 
+* Few large parameter differences
+
+### Step 2
+
+Factor means and variances are freely estimated accounting for noninvariance with the ultimate aim to choose values of the factor means and factor variances that minimize the total loss in F (i.e., minimize the total amount of noninvariance)
+
+Optimally F is minimized at a solution with
+
+* A small number of large noninvariant measurement parameters 
+* A majority of approximately invariant measurement parameters
+
+Aligned model still is the best fitting model
+
+Analogy to exploratory factor analysis and factor rotation
+
+* Rotation criteria aim at obtaining as many as possible small factor loadings and only a few large factor loadings
+
+### Step 3
+
+Post-estimation
+
+* Identify measurement parameters that are approximately invariant and those that are not
+* identify for each measurement parameter the largest invariant set of groups
+* Multiple pairwise comparisons across groups based on p < .05
+* Additional tests can identify measurement parameters that are approximately invariant and those that are not
+    + $R^2_{intercept}=1-V(v_0-v-\alpha_g\lambda)/V(v_0)$
+    + $R^2_{loading}=1-V(\lambda_0-\sqrt{\psi_g}\lambda)/V(\lambda_0)$
+    + $rbar:$ average correlation of aligned item parameters among groups
+
+**How much noninvariance is acceptable?**
+
+Proportion of noninvariant parameters in the final alignment model
+
+* < 25% - @muthacnIRTStudiesMany2014
+* < 29% - @flakeInvestigationAlignmentMethod2018
+
+Monte-Carlo simulations: high correlation of generated and estimated factor means (r ≥ 0.98)
+
+## Alignment - Universalism
+
+To calculate the alignment method, we first have to calculate the desired measurement model using lavaan.
+
+```{r}
+universalism_fit <- cfa(
+  model = "
+    group: [CZ]
+    uni =~ NA*ipeqopt + ipudrst + impenv
+    uni ~~ 1*uni
+    uni ~ 0*1
+    group: [DE]
+    uni =~ NA*ipeqopt + ipudrst + impenv
+    uni ~~ 1*uni
+    uni ~ 0*1
+    group: [GB]
+    uni =~ NA*ipeqopt + ipudrst + impenv
+    uni ~~ 1*uni
+    uni ~ 0*1
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+For identification: factor variances are fixed to 1 and the factor means are fixed to zero (fixed factor method)
+
+Second, extract parameter estimates for alignment:
+
+```{r}
+# Extract item parameters
+ipars <- parameterEstimates(universalism_fit)
+
+# Extract factor loadings (lambda's) (groups are in rows, items in columns)
+l <- ipars %>% 
+  # Filter for factor loadings
+  filter(op == "=~") %>% 
+  # Select column with unstd. loadings
+  select(est) %>% 
+  # get vector
+  flatten_dbl() %>% 
+  # transform to matrix
+  matrix(nrow = 3, byrow = T)
+
+# Extract interepts (nu's)
+n <- ipars %>% 
+  # Filter for intercepts with standard error is not 0
+  filter(op == "~1" & se != 0) %>% 
+  # Select column with intercepts
+  select(est) %>% 
+  # transform to vector
+  flatten_dbl() %>% 
+  # transform to matrix
+  matrix(nrow = 3, byrow = T)
+```
+
+Third, alignment with sirt:
+
+invariance.alignment(): performs alignment under approximate invariance for a CFA with G groups and I items
+
+* Estimate loadings and intercepts as a unidimensional factor model with factor mean and variance fixed to zero and one, resp.
+* Extract item parameters and estimates
+
+
+```{r}
+# Invariance alignment with default power (0.5) and epsilon (0.001) 
+uni_align1 <- invariance.alignment(lambda=l,nu=n)
+
+summary(uni_align1) 
+```
+
+**Result**
+
+* Under Effect Sizes of Approximate Invariance we can see that both the factor loadings and the intercepts are close to 1 (loadings R2: .987; intercepts: 1.00). The following applies: Values close to 1 imply a high degree of invariance. Values close to 0 imply a low degree of invariance. We thus have a strong indication of at least approximate invariance between the groups.
+* Under Group Means and Standard Deviations we find the relative latent mean values to Group 1 (CZ), as well as the associated standard deviation. Accordingly, it turns out that DE and GB have a relatively higher latent mean than CZ.
+* Under Summary Aligned Item Parameters Lambda / Nu we can see which parameters differ significantly between the groups. It can be seen that I2 (ipudrst) shows the greatest variance among SD.lambda and the factor loadings differ the most across the groups here. The same goes for the intercepts on this item. Here it can be seen under SD.nu that there is a clear variance between the groups. We can also understand this result using the absolute factor loadings and intercepts under Aligned Lambda / Nu Parameters.
+
+**Find parameter constraints for a pre-specified level tolerance**
+
+invariance_alignment_constraints(): postprocessing, estimation of item parameters under equality constraints for prespecified absolute values of “parameter tolerance”
+
+* Tolerance: degree of noninvariance tolerated => possible for loading and intercept parameters
+
+```{r}
+invariance_alignment_constraints(
+  model = uni_align1, 
+  lambda_parm_tol=.2,
+  nu_parm_tol=.4
+  ) %>% 
+  summary()
+```
+
+**Result**
+
+* With the recommended tolerance values of .2 for factor loadings and .4 for intercepts, our measurement model has no other deviating parameters for factor loadings and intercepts within this approximation, i.e. 0% noninvariance item parameters. So we can at least assume an approximate scalar measurement invariance.
+
+**Invariance alignment with higher power (2)** 
+
+```{r}
+# Invariance alignment with higher power (2) and default epsilon (0.001)
+uni_align2 <- invariance.alignment(lambda=l,nu=n,align.pow=c(2,2))
+
+summary(uni_align2)
+```
+
+## Summary
+
+**Greatly simplifies MI testing and estimation of latent means for comparison across groups**
+
+Useful in situations
+
+* Where latent mean comparisons are desired
+* With many groups
+* With many approximately invariant parameters 
+* With a few large non-invariant parameter
+
+
+# Multigroup SEM
+
+## Why MGSEM?
+
+After testing MI, we may be interested not only in comparing means or variances of latent variables across countries, but also comparing...
+
+* ... correlations between constructs
+* ... regression coefficients
+* (... indirect and total effects, mediation) 
+* (... interaction)
+
+Separate (full) structural models in two or more groups 
+
+* Separate estimates of within-group parameters (e.g., paths coefficients, correlations)
+* Separate χ2 and fit indices for each group and global fit indices
+* Compare multiple groups simultaneously or pairs of groups (e.g., parameter constraints across groups for setting predictive paths equal for all or some of the groups)
+
+```{r, out.width = "50%", echo=F}
+knitr::include_graphics(here::here("figs", "mgsem.png"))
+```
+
+In case of two groups (g1 & g2) the structural equations are:
+
+$$
+\begin{split}
+\eta_{1,g1}=\xi_{1,g1}*\gamma_{11,g1}+\zeta_{1,g1} \\
+\eta_{1,g2}=\xi_{1,g2}*\gamma_{11,g2}+\zeta_{1,g2} \\
+\end{split}
+$$
+
+Measurement parameters should be invariant across groups
+
+* Factor loadings (metric MI), e.g. fpr slope comparisons
+* Factor loadings and intercepts (scalar MI), e.g. for latent mean comparison
+
+## Moderation
+
+Among other things, MGSEM can be used to answer whether the regression coefficient differs between two groups, i.e. whether the group variable forms a moderation effect between the predictor and the dependent variable.
+
+**Moderation*
+
+```{r, out.width = "20%", echo=F, fig.align='left'}
+knitr::include_graphics(here::here("figs", "example_moderation.png"))
+```
+
+Differs $\gamma_{xy}$ for values of Z?
+
+```{r, out.width = "50%", echo=F, fig.align='left'}
+knitr::include_graphics(here::here("figs", "mgsem_moderations.png"))
+```
+
+* One-df $\chi^2$-test: are the slope differences significant?
+* Asymptotically equivalent to a regression in which Y is regressed on the product variable XZ
+
+**Moderated mediation**
+
+```{r, out.width = "20%", echo=F, fig.align='left'}
+knitr::include_graphics(here::here("figs", "example_moderation2.png"))
+```
+
+* M is the mediator
+* Z is the moderator (grouping variable)
+
+When Z is categorical (e.g., binary 0/1):
+
+* Separate the model into groups
+* Impose equality constraints on either X -> M or M -> Y path, or both
+* $\chi^2$ comparison of constrained and unconstrained models
+
+## MGSEM - Model
+
+Compare the relationship between universalism and perceived threat across CZ, DE, and GB
+
+Test for $\chi^2$ difference => both models have equal factor loadings (metric MI) across groups
+
+```{r, out.width = "50%", echo=F}
+knitr::include_graphics(here::here("figs", "mgsem_model.png"))
+```
+
+### Step 1
+
+First we want to determine whether the model also works in each country individually.
+
+```{r}
+ESS07_countries <- group_split(ESS07, country) %>% 
+  # optional for better display
+  set_names(unique(ESS07$country))
+```
+
+```{r}
+mgsem_countries <- ESS07_countries %>% 
+  map(~ sem(
+    model = "
+    # measurement model
+    uni =~ ipeqopt + ipudrst + impenv
+    pthr =~ imbgeco + imtcjob + imueclt + rlgueim + imwbcnt 
+    imbgeco ~~ imtcjob
+    
+    # structural model
+    pthr ~ uni
+    ", 
+    data = .,
+    estimator = "MLR",
+    # optional if there are missing values
+    missing = "fiml.x"
+    ))
+```
+
+```{r}
+mgsem_countries %>% 
+  map(~ summary(
+    object = .,
+    fit.measures = T,
+    standardized = T
+    # rsquare = T
+  ))
+```
+
+### Step 2
+
+Next, we want to know if the model works across all countries, assuming metric measurement invariance. For this we first let the regression coefficients between the latent variables be freely calculated.
+
+Model 1: Regression coefficent ($\gamma$) different across countries
+
+```{r}
+mgsem1_free <- cfa(
+  model = "
+    # measurement model
+    uni =~ ipeqopt + ipudrst + impenv
+    pthr =~ imbgeco + imtcjob + imueclt + rlgueim + imwbcnt 
+    imbgeco ~~ imtcjob
+    
+    # structural model
+    pthr ~ uni
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  group.equal = c("loadings"),
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = mgsem1_free,
+  fit.measures = T,
+  standardized = T,
+  rsquare = T
+)
+```
+
+The model shows a good data fit, we then check whether the regression coefficient between universalism and perceived threat is invariant.
+
+### Step 3
+
+Model 2: Regression coefficient ($\gamma$) equal across countries
+
+```{r}
+mgsem1_constraint <- cfa(
+  model = "
+    # measurement model
+    uni =~ ipeqopt + ipudrst + impenv
+    pthr =~ imbgeco + imtcjob + imueclt + rlgueim + imwbcnt 
+    imbgeco ~~ imtcjob
+    
+    # structural model
+    pthr ~ uni
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  group.equal = c("loadings", "regressions"),
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = mgsem1_constraint,
+  fit.measures = T,
+  standardized = T,
+  rsquare = T
+)
+```
+
+### Step 4
+
+```{r}
+lavTestLRT(mgsem1_free, mgsem1_constraint)
+```
+
+**Result**
+
+* The more restrictive model (i.e., the one with equal regression coefficients) fits worse
+* In the MGSEM without constraints, we can clearly see under R-Square that the perseived threat in DE and GB can be explained proportionately by universalism. Only in CZ do we see practically no effect.
+
+### Step 5
+
+Consequently, in step 5 we want to try whether a model with free calculated regression coefficients in CZ and an equal coefficient between DE and GB is a better model.
+
+```{r, warning=F}
+mgsem1_constraint_partial <- sem(
+  model = "
+    group: [CZ]
+    uni =~ a*ipeqopt + b*ipudrst + c*impenv
+    pthr =~ d*imbgeco + e*imtcjob + f*imueclt + g*rlgueim + h*imwbcnt
+    imbgeco ~~ imtcjob
+    pthr ~ uni
+    
+    group: [DE]
+    uni =~ a*ipeqopt + b*ipudrst + c*impenv
+    pthr =~ d*imbgeco + e*imtcjob + f*imueclt + g*rlgueim + h*imwbcnt
+    imbgeco ~~ imtcjob
+    pthr ~ i*uni
+    
+    group: [GB]
+    uni =~ a*ipeqopt + b*ipudrst + c*impenv
+    pthr =~ d*imbgeco + e*imtcjob + f*imueclt + g*rlgueim + h*imwbcnt
+    imbgeco ~~ imtcjob
+    pthr ~ i*uni
+    
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r, message=FALSE, warning=FALSE}
+# summary(
+#   object = mgsem1_constraint_partial,
+#   fit.measures = T,
+#   standardized = T,
+#   rsquare = T
+# )
+```
+
+```{r}
+lavTestLRT(mgsem1_free, mgsem1_constraint, mgsem1_constraint_partial)
+```
+
+**Result**
+
+* The effect of universalism on perceived threat is equal in DE and GB
+* The effect of universalism on perceived threat in CZ is not equal to the same effect in DE and GB
+* Universalism has no effect perceived threat in CZ
+* Universalism has negative effects on perceived threat negatively in
+DE and GB
+* The effects are equal in DE and GB
+
+
+# MIMIC
+
+**Multiple indicators multiple causes**
+
+* Multiple observed indicators reflect the latent
+variable
+* (Multiple) observed predictors affect the latent variables
+
+```{r, out.width = "50%", echo=F}
+knitr::include_graphics(here::here("figs", "mimic.png"))
+```
+
+X can be categorical and continuous
+
+* X dummy coded: examine group differences in the latent mean of $\eta$
+* X can represent orthogonal analysis-of-variance design vectors to integrate experimental notions in SEM
+
+@muthenLatentVariableModeling1989 has used MIMIC to analyze population heterogeneity of parameters in latent variable models
+
+Based on this work, MIMIC can be used to identify noninvariant indicator intercepts @kimTestingMeasurementInvariance2012
+
+```{r, out.width = "50%", echo=F}
+knitr::include_graphics(here::here("figs", "noninvariant_indicator.png"))
+```
+
+## MIMIC - Universalism
+
+**Does the latent mean of universalism differ by educational level in DE?**
+
+```{r, out.width = "50%", echo=F}
+knitr::include_graphics(here::here("figs", "mimic_universalism.png"))
+```
+
+```{r}
+mimic1_countries <- ESS07_countries %>% 
+  map(~ sem(
+    model = "
+      uni =~ ipeqopt + ipudrst + impenv
+      uni ~ edu
+    ", 
+    data = .,
+    estimator = "MLR",
+    # optional if there are missing values
+    missing = "fiml.x"
+    ))
+```
+
+```{r}
+mimic1_countries %>% 
+  map(~ summary(
+    object = .,
+    fit.measures = T,
+    standardized = T
+    # rsquare = T
+  ))
+```
+
+**Result**
+
+* The mean on the unviersalism latent variable of people with „lower and higher tertiary“ education is 0.171 in CZ, 0.125 in DE and 0.270 in GB units higher than the mean of people „below tertiary“ education.
+
+
+**Is the intercept of the indicator impenv invariant across educational levels?**
+
+```{r}
+mimic2_countries <- ESS07_countries %>% 
+  map(~ sem(
+    model = "
+      uni =~ ipeqopt + ipudrst + impenv
+      uni ~ edu
+      impenv ~ edu
+    ", 
+    data = .,
+    estimator = "MLR",
+    # optional if there are missing values
+    missing = "fiml.x"
+    ))
+```
+
+```{r}
+mimic2_countries %>% 
+  map(~ summary(
+    object = .,
+    fit.measures = T,
+    standardized = T
+    # rsquare = T
+  ))
+```
+
+**Result**
+
+* There is no indication of an intercept difference on the „impenv“ indicator between educational groups in CZ and DE. 
+* In GB, on the other hand, respondents with “lower and higher tertiary” achieve -0.134 units lower than the mean of people “below tertiary” education.
+
+# References
+
+
+```{=html}
+<style type="text/css">
+
+TOC {
+  font-size: 4px;
+  color: black; 
+}
+body{ /* Normal  */
+      font-size: 14px;
+  }
+td {  /* Table  */
+  font-size: 8px;
+  text-align: center;
+}
+h1.title {
+  font-size: 24px;
+  font-weight: bold;
+}
+h1 { /* Header 1 */
+  font-size: 22px;
+  font-weight: bold;
+}
+h2 { /* Header 2 */
+    font-size: 20px;
+    font-weight: bold;
+}
+h3 { /* Header 3 */
+  font-size: 16px;
+}
+h4 { /* Header 3 */
+  font-size: 14px;
+}
+code.r{ /* Code block */
+    font-size: 13px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 13px;
+}
+</style>
+```
+
