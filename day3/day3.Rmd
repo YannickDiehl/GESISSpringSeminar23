@@ -1,7 +1,7 @@
 ---
 title: "GESIS Spring Seminar 23"
 subtitle: "Comparative Social Research with Multi-Group SEM"
-date: "Day 3 - 29.02.2023"
+date: "Day 3 - 01.03.2023"
 author: Daniel Seddig, Eldad Davidov, Peter Schmidt, Yannick Diehl
 output: 
   html_document: 
