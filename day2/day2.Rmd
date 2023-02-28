@@ -48,6 +48,7 @@ library(semptools)
 ESS07 <- read.csv("../data/ESS07.csv")
 ```
 
+
 # Confirmatory factor analysis
 
 Many variables in the social and behavioral sciences represent hypothetical constructs (e.g., traits, attitudes, values)
@@ -369,6 +370,11 @@ Reference indicator method:
 ```{r}
 universalism <- "Universalism =~ 1*ipeqopt + ipudrst + impenv"
 ```
+
+```{r}
+"Universalism =~ NA*ipeqopt + ipudrst + 1*impenv"
+```
+
 
 Fixed factor method:
 
@@ -1182,18 +1188,21 @@ universalism_fit_scalar <- cfa(
     ipeqopt ~ c*1
     ipudrst ~ d*1
     impenv ~ e*1
+    uni ~ 0*1
     
     group: [DE]
     uni =~ ipeqopt + a*ipudrst + b*impenv
     ipeqopt ~ c*1
     ipudrst ~ d*1
     impenv ~ e*1
+    uni ~ NA*1
     
     group: [GB]
     uni =~ ipeqopt + a*ipudrst + b*impenv
     ipeqopt ~ c*1
     ipudrst ~ d*1
     impenv ~ e*1
+    uni ~ NA*1
   ",
   data = ESS07,
   estimator = "MLR",
