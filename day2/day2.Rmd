@@ -1939,6 +1939,11 @@ Partial measurement invariance @byrneTestingEquivalenceFactor1989
 * Two indicators with invariant loadings and intercepts are sufficient for valid latent mean comparisons
     + Step 1: identify misspecified equality constraints and relax them (-> modification indices)
     + Step 2: re-estimate and compare with the previous (full) MI models
+    
+
+```{r, out.width = "50%", echo=F}
+knitr::include_graphics(here::here("figs", "partial_procedure.png"))
+```
 
 
 ## Partial MI - Universalism
@@ -2660,10 +2665,41 @@ scfa_fit_scalar %>%
   export_table(table_width = 1, digits = 2)
 ```
 
-**Fixed factor method**
+**Reference indicator method**
 
 ```{r}
 scfa_fit_scalar_partial <- cfa(
+  model = "
+    Universalism =~ ipeqopt + ipudrst + impenv
+    TraditionConformity =~ imptrad + ipfrule + ipbhprp
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  group.equal = c("loadings", "intercepts"),
+  group.partial = c("ipbhprp~1"),
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+
+```{r}
+summary(
+  object = scfa_fit_scalar_partial,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+
+**Fixed factor method**
+
+```{r}
+scfa_fit_scalar_partial2 <- cfa(
   model = "
     Universalism =~ c(NA,NA,NA)*ipeqopt + c(a,a,a)*ipeqopt + c(b,b,b)*ipudrst + c(c,c,c)*impenv
     ipeqopt ~ c(k,k,k)*1
@@ -2698,7 +2734,7 @@ scfa_fit_scalar_partial <- cfa(
 
 ```{r}
 summary(
-  object = scfa_fit_scalar_partial,
+  object = scfa_fit_scalar_partial2,
   fit.measures = T,
   standardized = T
   # rsquare = T
@@ -2707,9 +2743,32 @@ summary(
 
 ### Comparing fit statistics
 
+**Reference indicator method**
+
 ```{r, warning=F}
 compFit.scfa.3 <- compareFit(
   scalar = scfa_fit_scalar_partial,
+  metric = scfa_fit_metric,
+  config = scfa_fit_config,
+  argsLRT = list(method = "satorra.bentler.2001")
+)
+```
+
+```{r}
+summary(
+  object = compFit.scfa.3, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr", "aic", "bic")
+  ) 
+```
+
+
+**Fixed factor method**
+
+```{r, warning=F}
+compFit.scfa.4 <- compareFit(
+  scalar = scfa_fit_scalar_partial2,
   metric = scfa_fit_metric2,
   config = scfa_fit_config2,
   argsLRT = list(method = "satorra.bentler.2001")
@@ -2718,7 +2777,7 @@ compFit.scfa.3 <- compareFit(
 
 ```{r}
 summary(
-  object = compFit.scfa.3, 
+  object = compFit.scfa.4, 
   fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
                    "rmsea.scaled", "cfi.scaled", "tli.scaled",
                    "srmr", "aic", "bic")
@@ -2746,6 +2805,63 @@ scfa_fit_scalar_partial %>%
   export_table(table_width = 1, digits = 2)
 ```
 
+Since no further parameters are recommended after the LavTestScore() function, we use the results of the partial measurement invariance of the individual CFAs. With this we also release the variables impenv and imbgeco.
+
+**Reference indicator method**
+
+```{r}
+scfa_fit_scalar_partial3 <- cfa(
+  model = "
+    Universalism =~ ipeqopt + ipudrst + impenv
+    TraditionConformity =~ imptrad + ipfrule + ipbhprp
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  group.equal = c("loadings", "intercepts"),
+  group.partial = c("ipbhprp~1", "impenv~1", "imbgeco~1"),
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+
+```{r}
+summary(
+  object = scfa_fit_scalar_partial3,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Comparing fit statistics
+
+**Reference indicator method**
+
+```{r, warning=F}
+compFit.scfa.5 <- compareFit(
+  scalar = scfa_fit_scalar_partial3,
+  metric = scfa_fit_metric,
+  config = scfa_fit_config,
+  argsLRT = list(method = "satorra.bentler.2001")
+)
+```
+
+```{r}
+summary(
+  object = compFit.scfa.5, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr", "aic", "bic")
+  ) 
+```
+
+**Result**
+
+* According to @chenSensitivityGoodnessFit2007, we have also reached the cut-off limits of the scalar measurement invariance.
 
 # References
 

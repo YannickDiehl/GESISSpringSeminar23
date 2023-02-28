@@ -246,7 +246,7 @@ invariance_alignment_constraints(
 
 **Result**
 
-* With the recommended tolerance values of .2 for factor loadings and .4 for intercepts, our measurement model has no other deviating parameters for factor loadings and intercepts within this approximation, i.e. 0% noninvariance item parameters. So we can at least assume an approximate scalar measurement invariance.
+* With the tolerance values of .2 for factor loadings and .4 for intercepts, our measurement model has no other deviating parameters for factor loadings and intercepts within this approximation, i.e. 0% noninvariance item parameters. So we can at least assume an approximate scalar measurement invariance.
 
 **Invariance alignment with higher power (2)** 
 
@@ -308,7 +308,7 @@ Measurement parameters should be invariant across groups
 
 Among other things, MGSEM can be used to answer whether the regression coefficient differs between two groups, i.e. whether the group variable forms a moderation effect between the predictor and the dependent variable.
 
-**Moderation*
+**Moderation**
 
 ```{r, out.width = "20%", echo=F, fig.align='left'}
 knitr::include_graphics(here::here("figs", "example_moderation.png"))
@@ -350,45 +350,6 @@ knitr::include_graphics(here::here("figs", "mgsem_model.png"))
 
 ### Step 1
 
-First we want to determine whether the model also works in each country individually.
-
-```{r}
-ESS07_countries <- group_split(ESS07, country) %>% 
-  # optional for better display
-  set_names(unique(ESS07$country))
-```
-
-```{r}
-mgsem_countries <- ESS07_countries %>% 
-  map(~ sem(
-    model = "
-    # measurement model
-    uni =~ ipeqopt + ipudrst + impenv
-    pthr =~ imbgeco + imtcjob + imueclt + rlgueim + imwbcnt 
-    imbgeco ~~ imtcjob
-    
-    # structural model
-    pthr ~ uni
-    ", 
-    data = .,
-    estimator = "MLR",
-    # optional if there are missing values
-    missing = "fiml.x"
-    ))
-```
-
-```{r}
-mgsem_countries %>% 
-  map(~ summary(
-    object = .,
-    fit.measures = T,
-    standardized = T
-    # rsquare = T
-  ))
-```
-
-### Step 2
-
 Next, we want to know if the model works across all countries, assuming metric measurement invariance. For this we first let the regression coefficients between the latent variables be freely calculated.
 
 Model 1: Regression coefficent ($\gamma$) different across countries
@@ -424,7 +385,7 @@ summary(
 
 The model shows a good data fit, we then check whether the regression coefficient between universalism and perceived threat is invariant.
 
-### Step 3
+### Step 2
 
 Model 2: Regression coefficient ($\gamma$) equal across countries
 
@@ -457,7 +418,7 @@ summary(
 )
 ```
 
-### Step 4
+### Step 3
 
 ```{r}
 lavTestLRT(mgsem1_free, mgsem1_constraint)
@@ -468,9 +429,9 @@ lavTestLRT(mgsem1_free, mgsem1_constraint)
 * The more restrictive model (i.e., the one with equal regression coefficients) fits worse
 * In the MGSEM without constraints, we can clearly see under R-Square that the perseived threat in DE and GB can be explained proportionately by universalism. Only in CZ do we see practically no effect.
 
-### Step 5
+### Step 4
 
-Consequently, in step 5 we want to try whether a model with free calculated regression coefficients in CZ and an equal coefficient between DE and GB is a better model.
+Consequently, in step 4 we want to try whether a model with free calculated regression coefficients in CZ and an equal coefficient between DE and GB is a better model.
 
 ```{r, warning=F}
 mgsem1_constraint_partial <- sem(
@@ -492,7 +453,6 @@ mgsem1_constraint_partial <- sem(
     pthr =~ d*imbgeco + e*imtcjob + f*imueclt + g*rlgueim + h*imwbcnt
     imbgeco ~~ imtcjob
     pthr ~ i*uni
-    
   ",
   data = ESS07,
   estimator = "MLR",
@@ -502,13 +462,13 @@ mgsem1_constraint_partial <- sem(
 )
 ```
 
-```{r, message=FALSE, warning=FALSE}
-# summary(
-#   object = mgsem1_constraint_partial,
-#   fit.measures = T,
-#   standardized = T,
-#   rsquare = T
-# )
+```{r}
+summary(
+  object = mgsem1_constraint_partial,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
 ```
 
 ```{r}
@@ -524,6 +484,206 @@ lavTestLRT(mgsem1_free, mgsem1_constraint, mgsem1_constraint_partial)
 DE and GB
 * The effects are equal in DE and GB
 
+## MGSEM - Model 2
+
+```{r, out.width = "50%", echo=F}
+knitr::include_graphics(here::here("figs", "mgsem_model2.png"))
+```
+
+With this model, we explicitly want to draw on our knowledge from simultaneous factor analysis and use the partial scalar measurement invariance model as a basis.
+
+### Step 1
+
+Model 1: Correlation coefficent between universalism and tradition/conformity ($\phi_{12}$) different across countries
+
+```{r}
+mgsem2_free <- cfa(
+  model = "
+    # measurement model
+    uni =~ ipeqopt + ipudrst + impenv
+    traco =~ imptrad + ipfrule + ipbhprp
+    pthr =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+    
+    # structural model
+    pthr ~ uni + traco
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  group.equal = c("loadings", "intercepts"),
+  group.partial = c("ipbhprp~1", "impenv~1", "imbgeco~1"),
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = mgsem2_free,
+  fit.measures = T,
+  standardized = T,
+  rsquare = T
+)
+```
+
+### Step 2
+
+Model 2: Correlation coefficent between universalism and tradition/conformity ($\phi_{12}$) equal across countries
+
+```{r}
+mgsem2_constraint <- cfa(
+  model = "
+    # measurement model
+    uni =~ ipeqopt + ipudrst + impenv
+    traco =~ imptrad + ipfrule + ipbhprp
+    pthr =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+    
+    # structural model
+    pthr ~ uni + traco
+    
+    # Correlation
+    uni ~~ i*traco
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  group.equal = c("loadings", "intercepts"),
+  group.partial = c("ipbhprp~1", "impenv~1", "imbgeco~1"),
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = mgsem2_constraint,
+  fit.measures = T,
+  standardized = T,
+  rsquare = T
+)
+```
+
+### Step 4
+
+```{r}
+lavTestLRT(mgsem2_free, mgsem2_constraint)
+```
+
+### Step 4
+
+```{r}
+mgsem2_constraint_partial <- cfa(
+  model = "
+    group: [CZ]
+    
+      # measurement model
+      uni =~ a*ipeqopt + b*ipudrst + c*impenv
+      ipeqopt ~ k*1
+      ipudrst ~ l*1
+      impenv ~ NA*1
+      uni ~ 0*1
+      
+      traco =~ d*imptrad + e*ipfrule + f*ipbhprp
+      imptrad ~ o*1
+      ipfrule ~ p*1
+      ipbhprp ~ NA*1 
+      traco ~ 0*1
+      
+      pthr =~ g*imbgeco + h*imueclt + i*imtcjob + j*rlgueim
+      imueclt ~~ rlgueim
+      imbgeco ~ NA*1
+      imueclt ~ s*1
+      imtcjob ~ t*1
+      rlgueim ~ u*1
+      pthr ~ 0*1
+      
+      # structural model
+      pthr ~ uni + traco
+      
+      # Correlation
+      uni ~~ traco 
+    
+    group: [DE]
+    
+      # measurement model
+      uni =~ a*ipeqopt + b*ipudrst + c*impenv
+      ipeqopt ~ k*1
+      ipudrst ~ l*1
+      impenv ~ NA*1
+      uni ~ NA*1
+      
+      traco =~ d*imptrad + e*ipfrule + f*ipbhprp
+      imptrad ~ o*1
+      ipfrule ~ p*1
+      ipbhprp ~ NA*1 
+      traco ~ NA*1
+      
+      pthr =~ g*imbgeco + h*imueclt + i*imtcjob + j*rlgueim
+      imueclt ~~ rlgueim
+      imbgeco ~ NA*1
+      imueclt ~ s*1
+      imtcjob ~ t*1
+      rlgueim ~ u*1
+      pthr ~ NA*1
+      
+      # structural model
+      pthr ~ uni + traco
+      
+      # Correlation
+      uni ~~ z*traco 
+    
+    group: [GB]
+    
+      # measurement model
+      uni =~ a*ipeqopt + b*ipudrst + c*impenv
+      ipeqopt ~ k*1
+      ipudrst ~ l*1
+      impenv ~ NA*1
+      uni ~ NA*1
+      
+      traco =~ d*imptrad + e*ipfrule + f*ipbhprp
+      imptrad ~ o*1
+      ipfrule ~ p*1
+      ipbhprp ~ NA*1 
+      traco ~ NA*1
+      
+      pthr =~ g*imbgeco + h*imueclt + i*imtcjob + j*rlgueim
+      imueclt ~~ rlgueim
+      imbgeco ~ NA*1
+      imueclt ~ s*1
+      imtcjob ~ t*1
+      rlgueim ~ u*1
+      pthr ~ NA*1
+    
+      # structural model
+      pthr ~ uni + traco
+      
+      # Correlation
+      uni ~~ z*traco 
+
+  ",
+  data = ESS07,
+  estimator = "MLR",
+  group = "country",
+  # optional if there are missing values
+  missing = "fiml.x"
+)
+```
+
+```{r}
+summary(
+  object = mgsem2_constraint_partial,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+```{r}
+lavTestLRT(mgsem2_free, mgsem2_constraint, mgsem2_constraint_partial)
+```
 
 # MIMIC
 
@@ -557,6 +717,13 @@ knitr::include_graphics(here::here("figs", "noninvariant_indicator.png"))
 ```{r, out.width = "50%", echo=F}
 knitr::include_graphics(here::here("figs", "mimic_universalism.png"))
 ```
+
+```{r}
+ESS07_countries <- group_split(ESS07, country) %>% 
+  # optional for better display
+  set_names(unique(ESS07$country))
+```
+
 
 ```{r}
 mimic1_countries <- ESS07_countries %>% 
