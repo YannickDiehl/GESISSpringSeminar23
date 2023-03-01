@@ -236,8 +236,8 @@ invariance_alignment_constraints(): postprocessing, estimation of item parameter
 ```{r}
 invariance_alignment_constraints(
   model = uni_align1, 
-  lambda_parm_tol=.01,
-  nu_parm_tol=.01
+  lambda_parm_tol=.2,
+  nu_parm_tol=.4
   ) %>% 
   summary()
 ```
