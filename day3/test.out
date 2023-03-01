@@ -1,0 +1,414 @@
+Mplus VERSION 8.8 (Mac)
+MUTHEN & MUTHEN
+03/01/2023   8:13 AM
+
+INPUT INSTRUCTIONS
+
+  TITLE:
+  Alignment Model (Fixed);
+  DATA:
+  FILE = "test.dat";
+
+  VARIABLE:
+  NAMES = ipeqopt ipudrst impenv country;
+   MISSING=.;
+   classes c(3); knownclass = c(country = 1 2 3);
+  ANALYSIS:
+  estimator = MLR; type = mixture; alignment = fixed(1); processors = 10;
+  MODEL:
+
+    %OVERALL%
+
+    Universalism BY ipeqopt ipudrst impenv;
+
+  OUTPUT:
+  align;
+
+
+
+INPUT READING TERMINATED NORMALLY
+
+
+
+
+Alignment Model (Fixed);
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                        5844
+
+Number of dependent variables                                    3
+Number of independent variables                                  0
+Number of continuous latent variables                            1
+Number of categorical latent variables                           1
+
+Observed dependent variables
+
+  Continuous
+   IPEQOPT     IPUDRST     IMPENV
+
+Continuous latent variables
+   UNIVERSA
+
+Categorical latent variables
+   C
+
+  Knownclass            C
+
+
+Estimator                                                      MLR
+Information matrix                                        OBSERVED
+Optimization Specifications for the Quasi-Newton Algorithm for
+Continuous Outcomes
+  Maximum number of iterations                                 100
+  Convergence criterion                                  0.100D-05
+Optimization Specifications for the EM Algorithm
+  Maximum number of iterations                                 500
+  Convergence criteria
+    Loglikelihood change                                 0.100D-06
+    Relative loglikelihood change                        0.100D-06
+    Derivative                                           0.100D-05
+Optimization Specifications for the M step of the EM Algorithm for
+Categorical Latent variables
+  Number of M step iterations                                    1
+  M step convergence criterion                           0.100D-05
+  Basis for M step termination                           ITERATION
+Optimization Specifications for the M step of the EM Algorithm for
+Censored, Binary or Ordered Categorical (Ordinal), Unordered
+Categorical (Nominal) and Count Outcomes
+  Number of M step iterations                                    1
+  M step convergence criterion                           0.100D-05
+  Basis for M step termination                           ITERATION
+  Maximum value for logit thresholds                            15
+  Minimum value for logit thresholds                           -15
+  Minimum expected cell size for chi-square              0.100D-01
+Maximum number of iterations for H1                           2000
+Convergence criterion for H1                             0.100D-03
+Optimization algorithm                                         EMA
+Specifications for Alignment Analysis
+  Factor mean for reference group                            FIXED
+  Simplicity function                                         SQRT
+  Factor variance metric                           Reference group
+  Reference group                                                1
+  Tolerance value                                        0.100D-01
+  Number of random starts                                       30
+  Maximum number of iterations                                5000
+  Convergence criteration                                0.100D-02
+
+Input data file(s)
+  test.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of missing data patterns             1
+     Number of y missing data patterns           1
+     Number of u missing data patterns           0
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+
+     PROPORTION OF DATA PRESENT FOR Y
+
+
+           Covariance Coverage
+              IPEQOPT       IPUDRST       IMPENV
+              ________      ________      ________
+ IPEQOPT        1.000
+ IPUDRST        1.000         1.000
+ IMPENV         1.000         1.000         1.000
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     IPEQOPT               4.945      -1.143       1.000    0.65%       4.000      5.000      5.000
+            5844.000       1.082       1.296       6.000   33.35%       5.000      6.000
+     IPUDRST               4.717      -0.937       1.000    0.67%       4.000      5.000      5.000
+            5844.000       1.055       0.893       6.000   20.94%       5.000      6.000
+     IMPENV                4.878      -0.934       1.000    0.43%       4.000      5.000      5.000
+            5844.000       1.050       0.733       6.000   30.13%       5.000      6.000
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                       29
+
+Loglikelihood
+
+          H0 Value                      -30454.539
+          H0 Scaling Correction Factor      1.3116
+            for MLR
+
+Information Criteria
+
+          Akaike (AIC)                   60967.078
+          Bayesian (BIC)                 61160.599
+          Sample-Size Adjusted BIC       61068.446
+            (n* = (n + 2) / 24)
+
+
+
+FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES
+BASED ON THE ESTIMATED MODEL
+
+    Latent
+   Classes
+
+       1       1393.00000          0.23836
+       2       2671.00000          0.45705
+       3       1780.00000          0.30459
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+Latent Class 1 (1)
+
+ UNIVERSA BY
+    IPEQOPT            0.603      0.044     13.763      0.000
+    IPUDRST            0.573      0.045     12.689      0.000
+    IMPENV             0.655      0.046     14.238      0.000
+
+ Means
+    UNIVERSALI         0.000      0.000    999.000    999.000
+
+ Intercepts
+    IPEQOPT            4.538      0.028    159.514      0.000
+    IPUDRST            4.252      0.029    145.438      0.000
+    IMPENV             4.688      0.028    166.708      0.000
+
+ Variances
+    UNIVERSALI         1.000      0.000    999.000    999.000
+
+ Residual Variances
+    IPEQOPT            0.763      0.061     12.569      0.000
+    IPUDRST            0.863      0.056     15.343      0.000
+    IMPENV             0.673      0.056     11.989      0.000
+
+Latent Class 2 (2)
+
+ UNIVERSA BY
+    IPEQOPT            0.618      0.038     16.096      0.000
+    IPUDRST            0.597      0.056     10.751      0.000
+    IMPENV             0.568      0.061      9.301      0.000
+
+ Means
+    UNIVERSALI         0.879      0.109      8.091      0.000
+
+ Intercepts
+    IPEQOPT            4.583      0.051     89.523      0.000
+    IPUDRST            4.436      0.087     51.137      0.000
+    IMPENV             4.497      0.072     62.774      0.000
+
+ Variances
+    UNIVERSALI         0.630      0.094      6.721      0.000
+
+ Residual Variances
+    IPEQOPT            0.675      0.043     15.616      0.000
+    IPUDRST            0.549      0.034     16.238      0.000
+    IMPENV             0.705      0.034     20.767      0.000
+
+Latent Class 3 (3)
+
+ UNIVERSA BY
+    IPEQOPT            0.608      0.043     14.202      0.000
+    IPUDRST            0.767      0.119      6.432      0.000
+    IMPENV             0.465      0.066      7.077      0.000
+
+ Means
+    UNIVERSALI         0.642      0.107      6.016      0.000
+
+ Intercepts
+    IPEQOPT            4.604      0.057     80.158      0.000
+    IPUDRST            4.223      0.029    143.542      0.000
+    IMPENV             4.550      0.054     84.677      0.000
+
+ Variances
+    UNIVERSALI         0.849      0.195      4.354      0.000
+
+ Residual Variances
+    IPEQOPT            0.803      0.055     14.701      0.000
+    IPUDRST            0.614      0.072      8.558      0.000
+    IMPENV             0.988      0.044     22.454      0.000
+
+Categorical Latent Variables
+
+ Means
+    C#1               -0.245      0.036     -6.853      0.000
+    C#2                0.406      0.031     13.264      0.000
+
+
+QUALITY OF NUMERICAL RESULTS
+
+     Condition Number for the Information Matrix              0.498E-02
+       (ratio of smallest to largest eigenvalue)
+
+
+
+APPROXIMATE MEASUREMENT INVARIANCE (NONINVARIANCE) FOR GROUPS
+
+ Intercepts/Thresholds
+   IPEQOPT     1 2 3
+   IPUDRST     1 2 3
+   IMPENV      1 2 3
+
+ Loadings for UNIVERSA
+   IPEQOPT     1 2 3
+   IPUDRST     1 2 3
+   IMPENV      1 2 3
+
+
+FACTOR MEAN/INTERCEPT COMPARISON AT THE 5% SIGNIFICANCE LEVEL IN DESCENDING ORDER
+
+ Results for Factor UNIVERSA
+
+           Latent    Group      Factor
+ Ranking    Class    Value       Mean     Groups With Significantly Smaller Factor Mean
+     1         2         2       0.879    3 1
+     2         3         3       0.642    1
+     3         1         1       0.000
+
+
+
+
+ALIGNMENT OUTPUT
+
+INVARIANCE ANALYSIS
+
+ Intercepts/Thresholds
+ Intercept for IPEQOPT
+ Group     Group      Value      Value     Difference  SE       P-value
+     2         1      4.583      4.538      0.045      0.050      0.366
+     3         1      4.604      4.538      0.066      0.058      0.255
+     3         2      4.604      4.583      0.021      0.016      0.188
+ Approximate Measurement Invariance Holds For Groups:
+ 1 2 3
+ Weighted Average Value Across Invariant Groups:       4.578
+ R-square/Explained variance/Invariance index:       0.988
+
+ Invariant Group Values, Difference to Average and Significance
+ Group      Value Difference         SE    P-value
+     1      4.538     -0.041      0.040      0.310
+     2      4.583      0.004      0.011      0.692
+     3      4.604      0.025      0.019      0.187
+
+ Intercept for IPUDRST
+ Group     Group      Value      Value     Difference  SE       P-value
+     2         1      4.436      4.252      0.184      0.086      0.034
+     3         1      4.223      4.252     -0.029      0.017      0.087
+     3         2      4.223      4.436     -0.213      0.083      0.010
+ Approximate Measurement Invariance Holds For Groups:
+ 1 2 3
+ Weighted Average Value Across Invariant Groups:       4.327
+ R-square/Explained variance/Invariance index:       0.960
+
+ Invariant Group Values, Difference to Average and Significance
+ Group      Value Difference         SE    P-value
+     1      4.252     -0.075      0.041      0.070
+     2      4.436      0.108      0.046      0.017
+     3      4.223     -0.104      0.038      0.006
+
+ Intercept for IMPENV
+ Group     Group      Value      Value     Difference  SE       P-value
+     2         1      4.497      4.688     -0.191      0.075      0.011
+     3         1      4.550      4.688     -0.138      0.059      0.018
+     3         2      4.550      4.497      0.053      0.069      0.441
+ Approximate Measurement Invariance Holds For Groups:
+ 1 2 3
+ Weighted Average Value Across Invariant Groups:       4.559
+ R-square/Explained variance/Invariance index:       0.470
+
+ Invariant Group Values, Difference to Average and Significance
+ Group      Value Difference         SE    P-value
+     1      4.688      0.130      0.046      0.005
+     2      4.497     -0.062      0.036      0.082
+     3      4.550     -0.009      0.038      0.817
+
+
+
+ Loadings for UNIVERSA
+ Loadings for IPEQOPT
+ Group     Group      Value      Value     Difference  SE       P-value
+     2         1      0.618      0.603      0.015      0.027      0.586
+     3         1      0.608      0.603      0.004      0.019      0.817
+     3         2      0.608      0.618     -0.010      0.014      0.476
+ Approximate Measurement Invariance Holds For Groups:
+ 1 2 3
+ Weighted Average Value Across Invariant Groups:       0.611
+ R-square/Explained variance/Invariance index:       0.987
+
+ Invariant Group Values, Difference to Average and Significance
+ Group      Value Difference         SE    P-value
+     1      0.603     -0.008      0.017      0.646
+     2      0.618      0.007      0.010      0.513
+     3      0.608     -0.004      0.007      0.586
+
+ Loadings for IPUDRST
+ Group     Group      Value      Value     Difference  SE       P-value
+     2         1      0.597      0.573      0.025      0.065      0.702
+     3         1      0.767      0.573      0.195      0.127      0.125
+     3         2      0.767      0.597      0.170      0.126      0.178
+ Approximate Measurement Invariance Holds For Groups:
+ 1 2 3
+ Weighted Average Value Across Invariant Groups:       0.643
+ R-square/Explained variance/Invariance index:       0.292
+
+ Invariant Group Values, Difference to Average and Significance
+ Group      Value Difference         SE    P-value
+     1      0.573     -0.071      0.055      0.196
+     2      0.597     -0.046      0.045      0.306
+     3      0.767      0.124      0.085      0.145
+
+ Loadings for IMPENV
+ Group     Group      Value      Value     Difference  SE       P-value
+     2         1      0.568      0.655     -0.087      0.081      0.283
+     3         1      0.465      0.655     -0.190      0.084      0.024
+     3         2      0.465      0.568     -0.103      0.081      0.207
+ Approximate Measurement Invariance Holds For Groups:
+ 1 2 3
+ Weighted Average Value Across Invariant Groups:       0.557
+ R-square/Explained variance/Invariance index:       0.467
+
+ Invariant Group Values, Difference to Average and Significance
+ Group      Value Difference         SE    P-value
+     1      0.655      0.098      0.055      0.076
+     2      0.568      0.010      0.038      0.782
+     3      0.465     -0.092      0.051      0.068
+
+ Average Invariance index:       0.694
+
+
+     Beginning Time:  08:13:23
+        Ending Time:  08:13:23
+       Elapsed Time:  00:00:00
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2022 Muthen & Muthen

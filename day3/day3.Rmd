@@ -43,7 +43,7 @@ MGCFA prodecures for testing MI are often impractical / very restrictive
 
 * All non-target factor loadings in multifactor models are constrained to zero across groups
 * Zero error covariances among the indicator variables across groups
-* CFA model parameters (i.e., factor loadings, intercepts) are exactly equivalent across groups (“exact” approach; e.g., @zercherComparabilityUniversalismValue2015)
+* CFA model parameters (i.e., factor loadings, intercepts) are exactly equivalent across groups (“exact” approach; e.g., @zercher_comparability_2015)
 
 **MGCFA procedures for testing MI across a large number of groups often results in:**
 
@@ -75,7 +75,7 @@ Many large modification indexes
     + ...allowing for approximate measurement invariance
     
 * Allows latent mean comparisons under approximate invariance
-* Automates and greatly simplifies tests for invariance across a large number of groups (even as large as 92 groups; see @munckMeasurementInvarianceComparing2018)
+* Automates and greatly simplifies tests for invariance across a large number of groups (even as large as 92 groups; see @munck_measurement_2018)
 
 **Mathematical basis**
 
@@ -85,7 +85,7 @@ Simplicity function F (total loss function) $F = \Sigma_p\Sigma_{gm<gn}W_{gm,gn}
 
 weight factor, e.g. $W_{g1,g2}=\sqrt{N_{g1}N_{g2}}$
 
-component loss function, e.g. $f(x)=\sqrt{\sqrt{x^2+0.01}}$ => generalized loss function @robitzschLpLossFunctions2020
+component loss function, e.g. $f(x)=\sqrt{\sqrt{x^2+0.01}}$ => generalized loss function @robitzsch_lp_2020
 
 Generalized loss function: $f(x)=(x^2+\epsilon)^{p/2}$
 
@@ -142,8 +142,8 @@ Post-estimation
 
 Proportion of noninvariant parameters in the final alignment model
 
-* < 25% - @muthacnIRTStudiesMany2014
-* < 29% - @flakeInvestigationAlignmentMethod2018
+* < 25% - @muthan_irt_2014
+* < 29% - @flake_investigation_2018
 
 Monte-Carlo simulations: high correlation of generated and estimated factor means (r ≥ 0.98)
 
@@ -730,9 +730,9 @@ X can be categorical and continuous
 * X dummy coded: examine group differences in the latent mean of $\eta$
 * X can represent orthogonal analysis-of-variance design vectors to integrate experimental notions in SEM
 
-@muthenLatentVariableModeling1989 has used MIMIC to analyze population heterogeneity of parameters in latent variable models
+@muthen_latent_1989 has used MIMIC to analyze population heterogeneity of parameters in latent variable models
 
-Based on this work, MIMIC can be used to identify noninvariant indicator intercepts @kimTestingMeasurementInvariance2012
+Based on this work, MIMIC can be used to identify noninvariant indicator intercepts @kim_testing_2012
 
 ```{r, out.width = "50%", echo=F}
 knitr::include_graphics(here::here("figs", "noninvariant_indicator.png"))
@@ -747,9 +747,8 @@ knitr::include_graphics(here::here("figs", "mimic_universalism.png"))
 ```
 
 ```{r}
-ESS07_countries <- group_split(ESS07, country) %>% 
-  # optional for better display
-  set_names(unique(ESS07$country))
+ESS07_countries <- ESS07 %>% 
+  split(as.factor(.$country))
 ```
 
 

@@ -1,0 +1,933 @@
+---
+title: "GESIS Spring Seminar 23"
+subtitle: "Comparative Social Research with Multi-Group SEM"
+date: "Day 4 - 02.03.2023"
+author: Daniel Seddig, Eldad Davidov, Peter Schmidt, Yannick Diehl
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 3
+    toc_float: true
+toc-title: "Table of Contents"
+bibliography: ../citations/citations.bib
+biblio-style: "apalike"
+link-citations: true
+---
+
+```{r package-options, include=F}
+knitr::opts_chunk$set(comment = "", fig.align='center')
+```
+
+# Packages
+
+```{r setup, results='hide', message=F, warning=F}
+# basic tools 
+library(tidyverse)
+
+# building the models
+library(lavaan)
+library(blavaan)
+
+# cheking the models
+library(semTools)
+
+library(insight)
+```
+
+# Data
+
+```{r}
+ESS07 <- read.csv("../data/ESS07.csv")
+```
+
+# Categorical data
+
+All models discussed so far were estimated using maximum likelihood (ML) estimation
+
+ML assumes that the observed indicators follow a 
+
+* continuous and
+* multivariate normal distribution
+
+In many situations the assumptions are inappropriate and in fact the distributions are
+
+* non-normal (skewed) and/or
+* categorical (i.e., nominal/binary or ordinal)
+
+**What if we use continuous ML estimation with categorical and/or non-normal data?**
+
+* Estimates may be biased (wrong)
+* If data are not normal use robust ML estimators to obtain
+* Robust ML is (to a degree) less vulnerable to violations of assumptions
+    + Estimates are equivalent to conventional ML
+    + Standard errors and test statistics are corrected to account for non-normality @satorra_model_1990
+* Continuous ML estimation performs well when the indicators have at **least 5 categories** - see @beauducel_performance_2006; @hancock_nonnormal_2013; @rhemtulla_when_2012 and are **not extremely non-normal**
+
+Alternative estimation methods for categorical and/or non-normal data in SEM are
+
+* Unweighted least squares (ULS) 
+* Weighted least squares (WLS)
+
+**Weighted least squares** (WLS; Browne, 1984) - see @li_confirmatory_2016
+
+* WLS uses polychoric or polyserial correlations
+* WLS considers the higher moments of the joint distrbution of the data by including a weight matrix to estimate the model parameters
+* WLS estimates probit coefficients
+* Large samples required
+* Large models with small samples may result in unstable solutions
+* Huge computational burden (slow)
+
+**Mean and variance adjusted WLS estimator (WLSMV)** (Muthén et al. (1997)) - see @li_confirmatory_2016
+
+* Faster than WLS
+* Appropriate also for smaller sample sizes (e.g., n=200)
+* Probit link function
+* Standard model fit statistics can be obtained
+
+
+ML can handle categorial data as well (logit or probit link)
+
+* Logit and probit often with similar results
+* Logit does not allow modeling residual correlations
+* Numerical integration (can be computationally heavy)
+* Lavaan: pairwise maximum likelihood (PML); FIML not implemented
+
+## Multiple-group categorical CFA
+
+```{r, out.width = "50%", echo=F}
+knitr::include_graphics(here::here("figs", "categorical_cfa.png"))
+```
+
+* k denotes group membership
+* c is the number of categories in each item
+* $\upsilon$ denotes the thresholds
+* Factor loadings ($\lambda$) are probit or logit coefficients
+
+See @kim_testing_2011 and @svetina_multiple-group_2020
+
+```{r, out.width = "70%", echo=F}
+knitr::include_graphics(here::here("figs", "categorical_curve.png"))
+```
+
+## CFA - Tradition/Conformity
+
+First, we test the model for the entire population again.
+
+* Factor loadings are now probit coefficients
+* Intercepts are fixed to 0 for identifcation
+* Scales y* are SD of the latent response
+
+**All models are specified as reference indicator models, but can also be specified as fixed factor models at any time**
+
+### Model for whole population
+
+```{r}
+tradition_conformity_fit_cat <- cfa(
+  model = "
+  TraditionConformity =~ NA*imptrad + ipfrule + ipbhprp
+  TraditionConformity ~~ 1*TraditionConformity
+  ",
+  data = ESS07,
+  estimator = "WLSM",
+  # fiml is not available with categorical data
+  # missing = "fiml.x",
+  ordered=c("imptrad","ipfrule","ipbhprp")
+)
+```
+
+```{r}
+summary(
+  object = tradition_conformity_fit_cat,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Measurement for each group
+
+The model has just been identified and therefore has a perfect fit with the data. In addition, the factor loadings are sufficient.
+
+Now we want to test the model in all subgroups.
+
+```{r}
+ESS07_countries <- ESS07 %>% 
+  split(as.factor(.$country))
+```
+
+```{r}
+tradition_conformity_fit_cat_countries <- ESS07_countries %>% 
+  map(~ cfa(
+    model = "
+    TraditionConformity =~ NA*imptrad + ipfrule + ipbhprp
+    TraditionConformity ~~ 1*TraditionConformity
+    ",
+    data = .,
+    estimator = "WLSM",
+    # fiml is not available with categorical data
+    # missing = "fiml.x",
+    ordered=c("imptrad","ipfrule","ipbhprp")
+  ))
+```
+
+```{r}
+tradition_conformity_fit_cat_countries %>% 
+  map(~ summary(
+    object = .,
+    fit.measures = T,
+    standardized = T
+    # rsquare = T
+  ))
+```
+
+### Configural model 
+
+Now we want to test the confogural measurement model.
+
+```{r}
+tradition_conformity_fit_cat_config <- cfa(
+  model = "
+  TraditionConformity =~ NA*imptrad + ipfrule + ipbhprp
+  TraditionConformity ~~ 1*TraditionConformity
+  ",
+  data = ESS07,
+  estimator = "WLSM",
+  group = "country",
+  # fiml is not available with categorical data
+  # missing = "fiml.x",
+  ordered=c("imptrad","ipfrule","ipbhprp")
+)
+```
+
+```{r}
+summary(
+  object = tradition_conformity_fit_cat_config,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Metric model
+
+```{r}
+tradition_conformity_fit_cat_metric <- cfa(
+  model = "
+  group: [CZ]
+  TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+  TraditionConformity ~~ 1*TraditionConformity
+  
+  group: [DE]
+  TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+  TraditionConformity ~~ NA*TraditionConformity
+  
+  group: [GB]
+  TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+  TraditionConformity ~~ NA*TraditionConformity
+  ",
+  data = ESS07,
+  estimator = "WLSM",
+  group = "country",
+  # fiml is not available with categorical data
+  # missing = "fiml.x",
+  ordered=c("imptrad","ipfrule","ipbhprp")
+)
+```
+
+```{r}
+summary(
+  object = tradition_conformity_fit_cat_metric,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Scalar model
+
+**Here it is important to equate the thresholds instead of intercepts!**
+
+```{r}
+tradition_conformity_fit_cat_scalar <- cfa(
+  model = "
+    group: [CZ]
+    TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+    imptrad | d1*t1 + d2*t2 + d3*t3 + d4*t4 + d5*t5
+    ipfrule | e1*t1 + e2*t2 + e3*t3 + e4*t4 + e5*t5
+    ipbhprp | f1*t1 + f2*t2 + f3*t3 + f4*t4 + f5*t5
+    TraditionConformity ~ 0*1
+    TraditionConformity ~~ 1*TraditionConformity
+    
+    group: [DE]
+    TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+    imptrad | d1*t1 + d2*t2 + d3*t3 + d4*t4 + d5*t5
+    imptrad ~*~ NA*imptrad
+    ipfrule | e1*t1 + e2*t2 + e3*t3 + e4*t4 + e5*t5
+    ipfrule ~*~ NA*ipfrule
+    ipbhprp | f1*t1 + f2*t2 + f3*t3 + f4*t4 + f5*t5
+    ipbhprp ~*~ NA*ipbhprp
+    TraditionConformity ~ NA*1
+    TraditionConformity ~~ NA*TraditionConformity
+    
+    group: [GB]
+    TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+    imptrad | d1*t1 + d2*t2 + d3*t3 + d4*t4 + d5*t5
+    imptrad ~*~ NA*imptrad
+    ipfrule | e1*t1 + e2*t2 + e3*t3 + e4*t4 + e5*t5
+    ipfrule ~*~ NA*ipfrule
+    ipbhprp | f1*t1 + f2*t2 + f3*t3 + f4*t4 + f5*t5
+    ipbhprp ~*~ NA*ipbhprp
+    TraditionConformity ~ NA*1
+    TraditionConformity ~~ NA*TraditionConformity
+  ",
+  data = ESS07,
+  estimator = "WLSM",
+  group = "country",
+  # fiml is not available with categorical data
+  # missing = "fiml.x",
+  ordered=c("imptrad","ipfrule","ipbhprp")
+)
+```
+
+```{r}
+summary(
+  object = tradition_conformity_fit_cat_scalar,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Comparing fit statistics
+
+```{r}
+compFit.tradition_conformity_cat <- compareFit(
+  scalar = tradition_conformity_fit_cat_scalar,
+  metric = tradition_conformity_fit_cat_metric,
+  config = tradition_conformity_fit_cat_config,
+  nested =T,
+  indices = T,
+  argsLRT=list(asymptotic=T, method="satorra.bentler.2010")
+)
+```
+
+```{r}
+summary(
+  object = compFit.tradition_conformity_cat, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr")
+  ) 
+```
+
+### Partial measurement invariance
+
+```{r, warning=F}
+tradition_conformity_fit_cat_scalar %>% 
+  lavTestScore() %>% 
+  pluck("uni") %>% 
+  arrange(desc(X2)) %>%
+  filter(X2 > 5) %>% 
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
+
+```{r}
+tradition_conformity_fit_cat_scalar %>% 
+  parTable() %>% 
+  select(lhs, op, rhs, group, label, plabel, est, se) %>% 
+  filter(plabel == ".p17.") %>% 
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
+
+
+```{r}
+tradition_conformity_fit_cat_scalar_partial <- cfa(
+  model = "
+      group: [CZ]
+    TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+    imptrad | d1*t1 + d2*t2 + d3*t3 + d4*t4 + d5*t5
+    ipfrule | e1*t1 + e2*t2 + e3*t3 + e4*t4 + e5*t5
+    ipbhprp | NA*t1 + NA*t2 + NA*t3 + NA*t4 + NA*t5
+    TraditionConformity ~ 0*1
+    TraditionConformity ~~ 1*TraditionConformity
+    
+    group: [DE]
+    TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+    imptrad | d1*t1 + d2*t2 + d3*t3 + d4*t4 + d5*t5
+    imptrad ~*~ NA*imptrad
+    ipfrule | e1*t1 + e2*t2 + e3*t3 + e4*t4 + e5*t5
+    ipfrule ~*~ NA*ipfrule
+    ipbhprp | NA*t1 + NA*t2 + NA*t3 + NA*t4 + NA*t5
+    ipbhprp ~*~ NA*ipbhprp
+    TraditionConformity ~ NA*1
+    TraditionConformity ~~ NA*TraditionConformity
+    
+    group: [GB]
+    TraditionConformity =~ NA*imptrad + a*imptrad + b*ipfrule + c*ipbhprp
+    imptrad | d1*t1 + d2*t2 + d3*t3 + d4*t4 + d5*t5
+    imptrad ~*~ NA*imptrad
+    ipfrule | e1*t1 + e2*t2 + e3*t3 + e4*t4 + e5*t5
+    ipfrule ~*~ NA*ipfrule
+    ipbhprp | NA*t1 + NA*t2 + NA*t3 + NA*t4 + NA*t5
+    ipbhprp ~*~ NA*ipbhprp
+    TraditionConformity ~ NA*1
+    TraditionConformity ~~ NA*TraditionConformity
+  ",
+  data = ESS07,
+  estimator = "WLSM",
+  group = "country",
+  # fiml is not available with categorical data
+  # missing = "fiml.x",
+  ordered=c("imptrad","ipfrule","ipbhprp")
+)
+```
+
+```{r}
+summary(
+  object = tradition_conformity_fit_cat_scalar_partial,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+```{r}
+compFit.tradition_conformity_cat2 <- compareFit(
+  scalar = tradition_conformity_fit_cat_scalar_partial,
+  metric = tradition_conformity_fit_cat_metric,
+  config = tradition_conformity_fit_cat_config,
+  nested =T,
+  indices = T,
+  argsLRT=list(asymptotic=T, method="satorra.bentler.2010")
+)
+```
+
+```{r}
+summary(
+  object = compFit.tradition_conformity_cat2, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr")
+  ) 
+```
+
+## CFA - Perceived Threat
+
+### Model for whole population
+
+```{r}
+perceived_threat_fit_cat <- cfa(
+  model = "
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+  ",
+  data = ESS07,
+  estimator = "WLSM",
+  # fiml is not available with categorical data
+  # missing = "fiml.x",
+  ordered=c("imbgeco","imueclt","imtcjob","rlgueim")
+)
+```
+
+```{r}
+summary(
+  object = perceived_threat_fit_cat,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Measurement for each group
+
+```{r}
+perceived_threat_fit_cat_countries <- ESS07_countries %>% 
+  map(~ cfa(
+    model = "
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+    ",
+    data = .,
+    estimator = "WLSM",
+    # fiml is not available with categorical data
+    # missing = "fiml.x",
+    ordered=c("imbgeco","imueclt","imtcjob","rlgueim")
+  ))
+```
+
+```{r}
+perceived_threat_fit_cat_countries %>% 
+  map(~ summary(
+    object = .,
+    fit.measures = T,
+    standardized = T
+    # rsquare = T
+  ))
+```
+
+### Configural model
+
+```{r}
+perceived_threat_fit_cat_config <- cfa(
+  model = "
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+  ",
+  data = ESS07,
+  estimator = "WLSM",
+  group = "country",
+  # fiml is not available with categorical data
+  # missing = "fiml.x",
+  ordered=c("imbgeco","imueclt","imtcjob","rlgueim")
+)
+```
+
+```{r}
+summary(
+  object = perceived_threat_fit_cat_config,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Metric model
+
+```{r}
+perceived_threat_fit_cat_metric <- cfa(
+  model = "
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+  ",
+  data = ESS07,
+  estimator = "WLSM",
+  group = "country",
+  group.equal = c("loadings"),
+  # fiml is not available with categorical data
+  # missing = "fiml.x",
+  ordered=c("imbgeco","imueclt","imtcjob","rlgueim")
+)
+```
+
+```{r}
+summary(
+  object = perceived_threat_fit_cat_metric,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Scalar model
+
+```{r}
+perceived_threat_fit_cat_scalar <- cfa(
+  model = "
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+  ",
+  data = ESS07,
+  estimator = "WLSM",
+  group = "country",
+  group.equal = c("loadings", "thresholds"),
+  # fiml is not available with categorical data
+  # missing = "fiml.x",
+  ordered=c("imbgeco","imueclt","imtcjob","rlgueim")
+)
+```
+
+```{r}
+summary(
+  object = perceived_threat_fit_cat_scalar,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+### Comparing fit statistics
+
+```{r, warning=F}
+compFit.perceived_threat_cat <- compareFit(
+  scalar = perceived_threat_fit_cat_scalar,
+  metric = perceived_threat_fit_cat_metric,
+  config = perceived_threat_fit_cat_config,
+  nested = T,
+  indices = T,
+  argsLRT=list(asymptotic=T, method="satorra.bentler.2010")
+)
+```
+
+```{r}
+summary(
+  object = compFit.perceived_threat_cat, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr")
+  ) 
+```
+
+### Partial measurement invariance
+
+```{r, warning=F}
+perceived_threat_fit_cat_scalar %>% 
+  lavTestScore() %>% 
+  pluck("uni") %>% 
+  arrange(desc(X2)) %>%
+  filter(X2 > 5) %>% 
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
+
+```{r}
+perceived_threat_fit_cat_scalar %>% 
+  parTable() %>% 
+  select(lhs, op, rhs, group, label, plabel, est, se) %>% 
+  filter(plabel == ".p31.") %>% 
+  # optional for better display 
+  export_table(table_width = 1, digits = 2)
+```
+
+```{r}
+perceived_threat_fit_cat_scalar_partial <- cfa(
+  model = "
+    PerceivedThreat =~ imbgeco + imueclt + imtcjob + rlgueim
+    imueclt ~~ rlgueim
+  ",
+  data = ESS07,
+  estimator = "WLSM",
+  group = "country",
+  group.equal = c("loadings", "thresholds"),
+  group.partial = c("imtcjob|t1","imtcjob|t2","imtcjob|t3",
+                    "imtcjob|t4","imtcjob|t5"),
+  # fiml is not available with categorical data
+  # missing = "fiml.x",
+  ordered=c("imbgeco","imueclt","imtcjob","rlgueim")
+)
+```
+
+```{r}
+summary(
+  object = perceived_threat_fit_cat_scalar_partial,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+)
+```
+
+```{r, warning=F}
+compFit.perceived_threat_cat2 <- compareFit(
+  scalar = perceived_threat_fit_cat_scalar_partial,
+  metric = perceived_threat_fit_cat_metric,
+  config = perceived_threat_fit_cat_config,
+  nested = T,
+  indices = T,
+  argsLRT=list(asymptotic=T, method="satorra.bentler.2010")
+)
+```
+
+```{r}
+summary(
+  object = compFit.perceived_threat_cat2, 
+  fit.measures = c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                   "rmsea.scaled", "cfi.scaled", "tli.scaled",
+                   "srmr")
+  ) 
+```
+
+# Bayesian MI
+
+Usually equality constraints are strict: the difference of parameters across any pair of groups is assumed to be exactly zero, e.g., $\tau^g-\tau^{g'}=0$
+
+Exact zero constraints may be overly strict -> excessive model rejection, even when parameter differences are small
+
+On the other end: configural model with no constraints -> best fit but parameters may not be compared
+
+**Instead: allow for “wiggle room” assuming parameter differences are approximately zero**, e.g. $\tau^g-\tau^{g'}\sim N(0,\sigma)$ -> for all differing pairs of groups $g \neq g'$
+
+Determine $\sigma$ using a fixed prior: Bayesian SEM - see @muthen_bayesian_2012; @seddig_approximate_2018
+
+* “Push” small parameter differences in intercept and factor loadings between groups closer to zero
+* Small differences will not bias substantive conclusions - @van_de_schoot_facing_2013
+
+```{r, out.width = "50%", echo=F}
+knitr::include_graphics(here::here("figs", "bayes_mi.png"))
+```
+
+**Example**
+
+Difference $\tau_1-\tau_2$
+
+$V(\tau_1-\tau_2)=V(\tau_1)+V(\tau_2)-2Cov(\tau_1,\tau_2)$
+
+Assume variances = 0.5, and Cov = 0.495, then
+
+$V(\tau_1-\tau_2)=.001$
+
+Prior $\tau_1-\tau_2\sim N(0,\sigma=.001)$
+
+* The smaller the prior variance, the more the results will be closer to exact MI
+* The larger the prior variance, the more the results will reflect a configural model
+
+“(...) Bayesian approaches allow researchers to incorporate background knowledge into their analyses instead of (...) ignoring the lessons of previous studies. (...) [S]tatistical methods based on the frequentist (classical) paradigm (i.e., the default approach in most software) often involve testing the null hypothesis. In plain terms, the null hypothesis states that “nothing is going on.” This hypothesis might be a bad starting point because, based on previous research, it is almost always expected that “something is going on”. @van_de_schoot_gentle_2014; emphases by D. Seddig
+
+* Background knowledge: parameters may not be invariant
+* Expectation (hypothesis): parameter differences are not (exactly) zero
+
+## Procedure
+
+* All parameters in a statistical model are given a joint probability distribution (prior and data distributions)
+* Available knowledge about parameters in a statistical model is captured via prior distributions
+* Information about the parameters in the data is captured by the likelihood function
+* Both are combined using estimation techniques (e.g., Gibbs Sampler, MH Sampler) in the form of the posterior distribution
+* Posterior distribution: updated knowledge, balancing prior knowledge with observed data
+
+```{r, out.width = "50%", echo=F}
+knitr::include_graphics(here::here("figs", "bayes_curves.png"))
+```
+
+Estimation: Markov chain Monte Carlo (MCMC) sampling - see @gelfand_sampling-based_1990
+
+* Iterative sampling from the posterior
+* Monte Carlo: random simulation process
+* Markov chain: sampling a new value from the posterior distribution, given the previous value
+
+Convergence monitoring
+
+* Potential scale reduction factor (PSR, Gelman & Rubin, 1992):
+  + ratio of total variation across chains/variation within chains
+  + values close to 1 indicate convergence
+* Graphical (e.g., trace plots)
+
+**Model fit and comparison** - see @gelman_posterior_1996
+
+* Bayesian or posterior predictive p-value $(p_B~or~ppp)$ 
+
+$p_B=Pr(D(y^{rep})\geq D(y)|y)$
+
+* proportion of replicated data sets with a discrepancy measure (e.g., $\chi^2$) exceeding the discrepancy measure of the original data given the model
+* acceptable fit: $p_B>.05$
+* Deviance Information Criterion (Spiegelhalter et al., 2002)
+
+## Bayes MI - Universalism
+
+Before we can start the analysis, we must first take a sample, otherwise the calculations would take too long.
+
+```{r}
+ESS07_sample <- ESS07 %>% 
+  sample_n(500)
+```
+
+### Model for whole population
+
+```{r}
+universalism_fit_bayes <- bcfa(
+    model = "Universalism =~ ipeqopt + ipudrst + impenv", 
+    data = ESS07_sample,
+    # not working
+    # estimator = "MLR",
+    # missing = "fiml.x",
+    n.chains=2,
+    burnin=5000,
+    sample=5000,
+    inits="simple"
+    )
+```
+
+```{r}
+fitMeasures(universalism_fit_bayes)
+```
+
+
+```{r}
+summary(
+  object = universalism_fit_bayes,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+  )
+```
+
+### Measurement for each group
+
+```{r}
+universalism_fit_bayes_countries <- ESS07_countries %>% 
+  map(~ bcfa(
+    model = "Universalism =~ ipeqopt + ipudrst + impenv", 
+    data = .,
+    # not working
+    # estimator = "MLR",
+    # missing = "fiml.x",
+    n.chains=2,
+    burnin=5000,
+    sample=5000,
+    inits="simple"
+    ))
+```
+
+```{r}
+universalism_fit_bayes_countries %>% 
+  map(~ fitMeasures(.x))
+```
+
+```{r}
+universalism_fit_bayes_countries %>% 
+  map(~ summary(
+    object = .x,
+    fit.measures = T,
+    standardized = T
+    # rsquare = T
+  ))
+```
+
+
+### Configural model
+
+```{r}
+universalism_fit_bayes_config <- bcfa(
+    model = "Universalism =~ ipeqopt + ipudrst + impenv", 
+    data = ESS07_sample,
+    # not working
+    # estimator = "MLR",
+    # missing = "fiml.x",
+    group="country",
+    n.chains=2,
+    burnin=5000,
+    sample=5000,
+    inits="simple"
+    )
+```
+
+```{r}
+fitMeasures(universalism_fit_bayes_config)
+```
+
+```{r}
+summary(
+  object = universalism_fit_bayes_config,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+  )
+```
+
+### Metric model
+
+```{r}
+universalism_fit_bayes_metric <- bcfa(
+    model = "Universalism =~ ipeqopt + ipudrst + impenv", 
+    data = ESS07_sample,
+    # not working
+    # estimator = "MLR",
+    # missing = "fiml.x",
+    group="country",
+    group.equal = c("loadings"),
+    wiggle = c("loadings"),
+    wiggle.sd = 0.05,
+    n.chains = 2,
+    burnin = 5000,
+    sample = 5000,
+    inits = "simple"
+    )
+```
+
+```{r}
+fitMeasures(universalism_fit_bayes_metric)
+```
+
+```{r}
+summary(
+  object = universalism_fit_bayes_metric,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+  )
+```
+
+### Scalar model
+
+```{r}
+universalism_fit_bayes_scalar <- bcfa(
+    model = "Universalism =~ ipeqopt + ipudrst + impenv", 
+    data = ESS07_sample,
+    # not working
+    # estimator = "MLR",
+    # missing = "fiml.x",
+    group="country",
+    group.equal = c("loadings", "intercepts"),
+    wiggle = c("loadings", "intercepts"),
+    wiggle.sd = 0.05,
+    n.chains = 2,
+    burnin = 5000,
+    sample = 5000,
+    inits = "simple"
+    )
+```
+
+```{r}
+fitMeasures(universalism_fit_bayes_scalar)
+```
+
+```{r}
+summary(
+  object = universalism_fit_bayes_scalar,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+  )
+```
+
+
+
+# References
+
+
+
+
+```{=html}
+<style type="text/css">
+
+TOC {
+  font-size: 4px;
+  color: black; 
+}
+body{ /* Normal  */
+      font-size: 14px;
+  }
+td {  /* Table  */
+  font-size: 8px;
+  text-align: center;
+}
+h1.title {
+  font-size: 24px;
+  font-weight: bold;
+}
+h1 { /* Header 1 */
+  font-size: 22px;
+  font-weight: bold;
+}
+h2 { /* Header 2 */
+    font-size: 20px;
+    font-weight: bold;
+}
+h3 { /* Header 3 */
+  font-size: 16px;
+}
+h4 { /* Header 3 */
+  font-size: 14px;
+}
+code.r{ /* Code block */
+    font-size: 13px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 13px;
+}
+</style>
+```
+
+
+
+
+

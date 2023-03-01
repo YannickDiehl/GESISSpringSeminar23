@@ -1,0 +1,19 @@
+TITLE:
+Alignment Model (Fixed);
+DATA:
+FILE = "test.dat";
+ 
+VARIABLE:
+NAMES = ipeqopt ipudrst impenv country; 
+ MISSING=.;
+ classes c(3); knownclass = c(country = 1 2 3);
+ANALYSIS:
+estimator = MLR; type = mixture; alignment = fixed(1); processors = 10;
+MODEL:
+
+  %OVERALL%
+
+  Universalism BY ipeqopt ipudrst impenv;
+  
+OUTPUT:
+align;

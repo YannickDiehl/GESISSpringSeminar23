@@ -59,7 +59,7 @@ It is assumed that such indicators are manifestations of hypothetical constructs
 
 We need a model that is able to conceptualize the relationship between manifest indicators and latent variables
 
-The classic test theory @novickAxiomsPrincipalResults1966
+The classic test theory @novick_axioms_1966
 
 ```{r, fig.align='center', out.width="60%", echo=F}
 knitr::include_graphics("../figs/classic_test_theory.png")
@@ -160,11 +160,11 @@ $$F_{ML}(n-1)=\chi^2_{ML}$$
 Global fit measures: appropriateness of the entire model
 
 * Absolute Goodness/Badness-of-fit Indices
-  + Relation between $\chi^2$ and degrees of freedom = $\chi^2/df$ - @joreskogGeneralApproachConfirmatory1969
-  + Discrepancy to a saturated model = RMSEA - @steigerNotesSteigerLind2016)
+  + Relation between $\chi^2$ and degrees of freedom = $\chi^2/df$ - @joreskog_general_1969
+  + Discrepancy to a saturated model = RMSEA - @steiger_notes_2016
   + Discrepancy due to overall error = SRMR - Bentler (1995)
 * Comparative Goodness-of-fit Indices 
-  + Comparison to a null model = CFI - @bentlerComparativeFitIndexes1990, TLI - @tuckerReliabilityCoefficientMaximum1973
+  + Comparison to a null model = CFI - @bentler_comparative_1990, TLI - @tucker_reliability_1973
 * Detailed fit measures: appropriateness of specific parts of the model (e.g., constraints)
   + LRT
   + Modification indices 
@@ -183,7 +183,7 @@ Global fit measures: appropriateness of the entire model
 
 \*negative values indicate extremely misspecified model; when exceeds 1, model is extremely well-fitting
 
-*Source: West et al. (2012). Model fit and model selection in structural equation modeling. In Hoyle, R. H. (Ed.). (2012). Handbook of Structural Equation Modeling (p. 212-213). Guilford Press. See also @huCutoffCriteriaFit1999*
+*Source: West et al. (2012). Model fit and model selection in structural equation modeling. In Hoyle, R. H. (Ed.). (2012). Handbook of Structural Equation Modeling (p. 212-213). Guilford Press. See also @hu_cutoff_1999*
 
 ### Step 7
 
@@ -204,7 +204,7 @@ How to diagnose model misfit?
 
 Modification indices (MIs):
 
-Lagrange multiplier (@sorbomModelModification1989) - approximation of the reduction of $\chi^2$ if a single constrained parameter is freely estimated
+Lagrange multiplier @sorbom_model_1989 - approximation of the reduction of $\chi^2$ if a single constrained parameter is freely estimated
 
 * Test of local fit
 * One parameter at a time
@@ -451,7 +451,7 @@ ESS07 %>%
 ```
 * Item difficulty should range between 0.2 and 0.8. Ideal value is p+(1-p)/2 (which mostly is between 0.5 and 0.8). Lower values are a signal for more difficult items, while higher values close to one are a sign for easier items. The ideal value for item difficulty is p + (1 - p) / 2, where p = 1 / max(x). In most cases, the ideal item difficulty lies between 0.5 and 0.8.
 * For item discrimination, acceptable values are 0.20 or higher; the closer to 1.00 the better. The absolute value of the item discrimination indices should be above 0.1. An index between 0.1 and 0.3 is considered as "fair", while an index above 0.3 (or below -0.3) is "good". Items with low discrimination indices are often ambiguously worded and should be examined. Items with negative indices should be examined to determine why a negative value was obtained (e.g. reversed answer categories regarding positive and negative poles).
-* Mean inter-item-correlation is an alternative measure to indicate acceptability. Satisfactory range lies between 0.2 and 0.4. “Ideally, the average inter-item correlation for a set of items should be between .20 and .40, suggesting that while the items are reasonably homogenous, they do contain sufficiently unique variance so as to not be isomorphic with each other. When values are lower than .20, then the items may not be representative of the same content domain. If values are higher than .40, the items may be only capturing a small bandwidth of the construct.” @piedmontInteritemCorrelations2014-item_2014
+* Mean inter-item-correlation is an alternative measure to indicate acceptability. Satisfactory range lies between 0.2 and 0.4. “Ideally, the average inter-item correlation for a set of items should be between .20 and .40, suggesting that while the items are reasonably homogenous, they do contain sufficiently unique variance so as to not be isomorphic with each other. When values are lower than .20, then the items may not be representative of the same content domain. If values are higher than .40, the items may be only capturing a small bandwidth of the construct.” @michalos_inter-item_2014
 
 The selected items can be plausibly mapped together in one scale.
 
@@ -914,7 +914,7 @@ $\chi^2_d=\chi^2_{m1}-\chi^2_{m2}\ with\ df_{m1}-df_{m2}$
 
 Traditional $\chi^2$ difference testing is sensitive to sample size!
 
-Guidelines using alternative fit indices - @chenSensitivityGoodnessFit2007: differences between a constrained model (m1) and a more liberal model (m2) are considered irrelevant when
+Guidelines using alternative fit indices - @chen_sensitivity_2007: differences between a constrained model (m1) and a more liberal model (m2) are considered irrelevant when
 
 N > 300: $CFI(m1)-CFI(m2)\leq-.10\ and\ RMSEA(m1)-RMSEA(m2)\leq.015$
 
@@ -933,9 +933,8 @@ knitr::include_graphics(here::here("figs", "mgcfa_showcase.png"))
 Before we can approach a common model across all groups, we have to check whether the envisaged measurement model can be measured properly in each group.
 
 ```{r}
-ESS07_countries <- group_split(ESS07, country) %>% 
-  # optional for better display
-  set_names(unique(ESS07$country))
+ESS07_countries <- ESS07 %>% 
+  split(as.factor(.$country))
 ```
 
 We have now split the entire data set into three individual data sets according to the respective countries. These data sets are now checked individually as a measurement model.
@@ -1933,7 +1932,7 @@ summary(
 
 # Partial measurement invariance
 
-Partial measurement invariance @byrneTestingEquivalenceFactor1989
+Partial measurement invariance @byrne_testing_1989
 
 * In contrast to “full” MI only a few parameters are kept invariant
 * Two indicators with invariant loadings and intercepts are sufficient for valid latent mean comparisons
