@@ -39,17 +39,15 @@ ESS07 <- read.csv("../data/ESS07.csv")
 
 ## Approximate rather than exact MI?
 
-MGCFA prodecures for testing MI are often impractical are very restrictive
+MGCFA prodecures for testing MI are often impractical / very restrictive
 
 * All non-target factor loadings in multifactor models are constrained to zero across groups
 * Zero error covariances among the indicator variables across groups
 * CFA model parameters (i.e., factor loadings, intercepts) are exactly equivalent across groups (“exact” approach; e.g., @zercherComparabilityUniversalismValue2015)
 
-Limitations of "traditional" multigroup CFA
+**MGCFA procedures for testing MI across a large number of groups often results in:**
 
-**MGCFA procedures for testing MI across are large number of groups often results in:**
-
-Problems establishing of a group-appropriate structure of the configural model
+Problems establishing a group-appropriate structure of the configural model
 
 * numerous one-by-one comparisons 
 * time consuming
@@ -70,14 +68,14 @@ Many large modification indexes
 
 **Goals**
 
-* compare latent variables across groups without constraints for measurement invariance
-* estimate factor means via MGCFA, but...
+* Compare latent variables across groups without constraints for measurement invariance
+* Estimate factor means via MGCFA, but...
     + ...without using equality constraints for factor loadings and intercepts across groups
     + ...without affecting the comparability of factor means 
     + ...allowing for approximate measurement invariance
     
-* allows latent mean comparisons under approximate invariance
-* automates and greatly simplifies tests for invariance across a large number of groups (even as large as 92 groups; see @munckMeasurementInvarianceComparing2018)
+* Allows latent mean comparisons under approximate invariance
+* Automates and greatly simplifies tests for invariance across a large number of groups (even as large as 92 groups; see @munckMeasurementInvarianceComparing2018)
 
 **Mathematical basis**
 
@@ -238,11 +236,41 @@ invariance_alignment_constraints(): postprocessing, estimation of item parameter
 ```{r}
 invariance_alignment_constraints(
   model = uni_align1, 
-  lambda_parm_tol=.2,
-  nu_parm_tol=.4
+  lambda_parm_tol=.01,
+  nu_parm_tol=.01
   ) %>% 
   summary()
 ```
+
+
+<!-- ```{r} -->
+<!-- test <- mplusObject( -->
+<!--   TITLE = "Alignment Model (Fixed);", -->
+<!--   ANALYSIS = "estimator = MLR; type = mixture; alignment = fixed(1); processors = 10;", -->
+<!--   VARIABLE = "classes c(3); knownclass = c(country = 1 2 3);", -->
+<!--   MODEL = " -->
+<!--   %OVERALL% -->
+
+<!--   Universalism BY ipeqopt ipudrst impenv; -->
+<!--   ", -->
+<!--   OUTPUT = "align;" -->
+<!-- ) -->
+<!-- ``` -->
+
+<!-- #### Calculate model -->
+
+<!-- ```{r, results='hide'} -->
+<!-- mplusModeler( -->
+<!--   object = update( -->
+<!--     object = test, -->
+<!--     usevariables = names(ESS07 %>% select(ipeqopt, ipudrst, impenv, country)), -->
+<!--     rdata = ESS07 -->
+<!--     ), -->
+<!--   dataout = "test.dat", -->
+<!--   run = T, -->
+<!--   hashfilename = F, -->
+<!--   writeData = "always") -->
+<!-- ``` -->
 
 **Result**
 
