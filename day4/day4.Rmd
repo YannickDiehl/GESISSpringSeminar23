@@ -117,7 +117,6 @@ First, we test the model for the entire population again.
 * Intercepts are fixed to 0 for identifcation
 * Scales y* are SD of the latent response
 
-**All models are specified as reference indicator models, but can also be specified as fixed factor models at any time**
 
 ### Model for whole population
 
@@ -144,9 +143,9 @@ summary(
 )
 ```
 
-### Measurement for each group
-
 The model has just been identified and therefore has a perfect fit with the data. In addition, the factor loadings are sufficient.
+
+### Measurement for each group
 
 Now we want to test the model in all subgroups.
 
@@ -182,7 +181,7 @@ tradition_conformity_fit_cat_countries %>%
 
 ### Configural model 
 
-Now we want to test the confogural measurement model.
+Now we want to test the configural measurement model.
 
 ```{r}
 tradition_conformity_fit_cat_config <- cfa(

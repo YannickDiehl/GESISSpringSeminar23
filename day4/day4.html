@@ -1630,8 +1630,6 @@ probit or logit coefficients</li>
 <li>Intercepts are fixed to 0 for identifcation</li>
 <li>Scales y* are SD of the latent response</li>
 </ul>
-<p><strong>All models are specified as reference indicator models, but
-can also be specified as fixed factor models at any time</strong></p>
 <div id="model-for-whole-population" class="section level3">
 <h3>Model for whole population</h3>
 <pre class="r"><code>tradition_conformity_fit_cat &lt;- cfa(
@@ -1747,11 +1745,11 @@ Scales y*:
     imptrad           1.000                               1.000    1.000
     ipfrule           1.000                               1.000    1.000
     ipbhprp           1.000                               1.000    1.000</code></pre>
+<p>The model has just been identified and therefore has a perfect fit
+with the data. In addition, the factor loadings are sufficient.</p>
 </div>
 <div id="measurement-for-each-group" class="section level3">
 <h3>Measurement for each group</h3>
-<p>The model has just been identified and therefore has a perfect fit
-with the data. In addition, the factor loadings are sufficient.</p>
 <p>Now we want to test the model in all subgroups.</p>
 <pre class="r"><code>ESS07_countries &lt;- ESS07 %&gt;% 
   split(as.factor(.$country))</code></pre>
@@ -2072,7 +2070,7 @@ Scales y*:
 </div>
 <div id="configural-model" class="section level3">
 <h3>Configural model</h3>
-<p>Now we want to test the confogural measurement model.</p>
+<p>Now we want to test the configural measurement model.</p>
 <pre class="r"><code>tradition_conformity_fit_cat_config &lt;- cfa(
   model = &quot;
   TraditionConformity =~ NA*imptrad + ipfrule + ipbhprp
@@ -5322,8 +5320,8 @@ otherwise the calculations would take too long.</p>
 <pre><code>
 SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 0.000342 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 3.42 seconds.
+Chain 1: Gradient evaluation took 0.000338 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 3.38 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -5340,15 +5338,15 @@ Chain 1: Iteration: 8000 / 10000 [ 80%]  (Sampling)
 Chain 1: Iteration: 9000 / 10000 [ 90%]  (Sampling)
 Chain 1: Iteration: 10000 / 10000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 8.98651 seconds (Warm-up)
-Chain 1:                11.0834 seconds (Sampling)
-Chain 1:                20.0699 seconds (Total)
+Chain 1:  Elapsed Time: 9.09738 seconds (Warm-up)
+Chain 1:                9.53452 seconds (Sampling)
+Chain 1:                18.6319 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 0.000169 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 1.69 seconds.
+Chain 2: Gradient evaluation took 0.000193 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 1.93 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -5365,18 +5363,18 @@ Chain 2: Iteration: 8000 / 10000 [ 80%]  (Sampling)
 Chain 2: Iteration: 9000 / 10000 [ 90%]  (Sampling)
 Chain 2: Iteration: 10000 / 10000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 8.99976 seconds (Warm-up)
-Chain 2:                11.0852 seconds (Sampling)
-Chain 2:                20.0849 seconds (Total)
+Chain 2:  Elapsed Time: 8.9052 seconds (Warm-up)
+Chain 2:                10.1207 seconds (Sampling)
+Chain 2:                19.0259 seconds (Total)
 Chain 2: 
 Computing posterior predictives...</code></pre>
 <pre class="r"><code>fitMeasures(universalism_fit_bayes)</code></pre>
 <pre><code>Warning: 
 2 (0.4%) p_waic estimates greater than 0.4. We recommend trying loo instead.</code></pre>
 <pre><code>      npar       logl        ppp        bic        dic      p_dic       waic 
-     6.000  -2124.428      0.490   4286.132   4260.860      6.002   4263.765 
+     6.000  -2179.736      0.484   4396.748   4371.641      6.084   4375.608 
     p_waic    se_waic      looic      p_loo     se_loo margloglik 
-     8.767     76.299   4263.779      8.774     76.301  -2144.907 </code></pre>
+     9.882     83.105   4375.630      9.893     83.109  -2199.856 </code></pre>
 <pre class="r"><code>summary(
   object = universalism_fit_bayes,
   fit.measures = T,
@@ -5388,26 +5386,26 @@ Computing posterior predictives...</code></pre>
   Number of observations                           500
 
   Statistic                                 MargLogLik         PPP
-  Value                                      -2144.907       0.490
+  Value                                      -2199.856       0.484
 
 Latent Variables:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
   Universalism =~                                                       
-    ipeqopt           1.000                               0.690    0.636
-    ipudrst           0.982    0.176    0.679    1.378    0.677    0.631
-    impenv            0.718    0.118    0.501    0.968    0.495    0.487
+    ipeqopt           1.000                               0.692    0.642
+    ipudrst           0.877    0.165    0.585    1.236    0.607    0.560
+    impenv            0.792    0.144    0.533    1.094    0.548    0.496
      Rhat    Prior       
                          
                          
     1.000    normal(0,10)
-    1.001    normal(0,10)
+    1.000    normal(0,10)
 
 Variances:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           0.700    0.093    0.499    0.874    0.700    0.595
-   .ipudrst           0.692    0.087    0.517    0.858    0.692    0.601
-   .impenv            0.788    0.064    0.668    0.919    0.788    0.763
-    Universalism      0.476    0.102    0.297    0.695    1.000    1.000
+   .ipeqopt           0.685    0.100    0.474    0.867    0.685    0.588
+   .ipudrst           0.807    0.084    0.642    0.972    0.807    0.686
+   .impenv            0.921    0.080    0.768    1.081    0.921    0.754
+    Universalism      0.479    0.108    0.296    0.722    1.000    1.000
      Rhat    Prior       
     1.000 gamma(1,.5)[sd]
     1.000 gamma(1,.5)[sd]
@@ -5431,8 +5429,8 @@ Variances:
 <pre><code>
 SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 0.000343 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 3.43 seconds.
+Chain 1: Gradient evaluation took 0.000386 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 3.86 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -5449,15 +5447,15 @@ Chain 1: Iteration: 8000 / 10000 [ 80%]  (Sampling)
 Chain 1: Iteration: 9000 / 10000 [ 90%]  (Sampling)
 Chain 1: Iteration: 10000 / 10000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 20.0613 seconds (Warm-up)
-Chain 1:                21.619 seconds (Sampling)
-Chain 1:                41.6803 seconds (Total)
+Chain 1:  Elapsed Time: 19.7718 seconds (Warm-up)
+Chain 1:                22.8948 seconds (Sampling)
+Chain 1:                42.6667 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 0.000404 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 4.04 seconds.
+Chain 2: Gradient evaluation took 0.000369 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 3.69 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -5474,16 +5472,16 @@ Chain 2: Iteration: 8000 / 10000 [ 80%]  (Sampling)
 Chain 2: Iteration: 9000 / 10000 [ 90%]  (Sampling)
 Chain 2: Iteration: 10000 / 10000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 19.8389 seconds (Warm-up)
-Chain 2:                21.1052 seconds (Sampling)
-Chain 2:                40.9441 seconds (Total)
+Chain 2:  Elapsed Time: 20.0947 seconds (Warm-up)
+Chain 2:                26.4849 seconds (Sampling)
+Chain 2:                46.5796 seconds (Total)
 Chain 2: 
 Computing posterior predictives...
 
 SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 0.000639 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 6.39 seconds.
+Chain 1: Gradient evaluation took 0.000602 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 6.02 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -5500,15 +5498,15 @@ Chain 1: Iteration: 8000 / 10000 [ 80%]  (Sampling)
 Chain 1: Iteration: 9000 / 10000 [ 90%]  (Sampling)
 Chain 1: Iteration: 10000 / 10000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 36.1918 seconds (Warm-up)
-Chain 1:                39.7324 seconds (Sampling)
-Chain 1:                75.9242 seconds (Total)
+Chain 1:  Elapsed Time: 36.484 seconds (Warm-up)
+Chain 1:                40.508 seconds (Sampling)
+Chain 1:                76.992 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 0.000919 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 9.19 seconds.
+Chain 2: Gradient evaluation took 0.000612 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 6.12 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -5525,16 +5523,16 @@ Chain 2: Iteration: 8000 / 10000 [ 80%]  (Sampling)
 Chain 2: Iteration: 9000 / 10000 [ 90%]  (Sampling)
 Chain 2: Iteration: 10000 / 10000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 36.4274 seconds (Warm-up)
-Chain 2:                39.8488 seconds (Sampling)
-Chain 2:                76.2762 seconds (Total)
+Chain 2:  Elapsed Time: 36.5332 seconds (Warm-up)
+Chain 2:                39.2715 seconds (Sampling)
+Chain 2:                75.8047 seconds (Total)
 Chain 2: 
 Computing posterior predictives...
 
 SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 0.000418 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 4.18 seconds.
+Chain 1: Gradient evaluation took 0.000557 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 5.57 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -5551,15 +5549,15 @@ Chain 1: Iteration: 8000 / 10000 [ 80%]  (Sampling)
 Chain 1: Iteration: 9000 / 10000 [ 90%]  (Sampling)
 Chain 1: Iteration: 10000 / 10000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 30.6864 seconds (Warm-up)
-Chain 1:                40.526 seconds (Sampling)
-Chain 1:                71.2124 seconds (Total)
+Chain 1:  Elapsed Time: 30.564 seconds (Warm-up)
+Chain 1:                35.3068 seconds (Sampling)
+Chain 1:                65.8708 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 0.000513 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 5.13 seconds.
+Chain 2: Gradient evaluation took 0.000428 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 4.28 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -5576,30 +5574,30 @@ Chain 2: Iteration: 8000 / 10000 [ 80%]  (Sampling)
 Chain 2: Iteration: 9000 / 10000 [ 90%]  (Sampling)
 Chain 2: Iteration: 10000 / 10000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 31.0797 seconds (Warm-up)
-Chain 2:                33.4592 seconds (Sampling)
-Chain 2:                64.5389 seconds (Total)
+Chain 2:  Elapsed Time: 29.9588 seconds (Warm-up)
+Chain 2:                40.373 seconds (Sampling)
+Chain 2:                70.3317 seconds (Total)
 Chain 2: 
 Computing posterior predictives...</code></pre>
 <pre class="r"><code>universalism_fit_bayes_countries %&gt;% 
   map(~ fitMeasures(.x))</code></pre>
 <pre><code>$CZ
       npar       logl        ppp        bic        dic      p_dic       waic 
-     6.000  -5999.492      0.490  12042.414  12011.003      6.010  12013.240 
+     6.000  -5999.487      0.513  12042.406  12010.667      5.846  12012.815 
     p_waic    se_waic      looic      p_loo     se_loo margloglik 
-     8.205    119.855  12013.248      8.209    119.855  -6022.893 
+     7.950    119.862  12012.821      7.952    119.862  -6022.958 
 
 $DE
       npar       logl        ppp        bic        dic      p_dic       waic 
-     6.000 -10537.921      0.508  21123.180  21087.682      5.921  21092.227 
+     6.000 -10537.925      0.502  21123.189  21087.806      5.978  21092.405 
     p_waic    se_waic      looic      p_loo     se_loo margloglik 
-    10.435    201.330  21092.236     10.439    201.330 -10563.569 
+    10.537    201.272  21092.415     10.542    201.272 -10563.545 
 
 $GB
       npar       logl        ppp        bic        dic      p_dic       waic 
-     6.000  -7712.405      0.489  15469.713  15436.722      5.956  15439.263 
+     6.000  -7712.404      0.492  15469.711  15436.672      5.932  15439.193 
     p_waic    se_waic      looic      p_loo     se_loo margloglik 
-     8.458    138.789  15439.271      8.462    138.789  -7736.028 </code></pre>
+     8.418    138.843  15439.198      8.421    138.844  -7736.050 </code></pre>
 <pre class="r"><code>universalism_fit_bayes_countries %&gt;% 
   map(~ summary(
     object = .x,
@@ -5612,45 +5610,45 @@ $GB
   Number of observations                          1393
 
   Statistic                                 MargLogLik         PPP
-  Value                                      -6022.893       0.490
+  Value                                      -6022.958       0.513
 
 Latent Variables:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
   Universalism =~                                                       
-    ipeqopt           1.000                               0.598    0.563
-    ipudrst           0.963    0.092    0.796    1.156    0.576    0.526
-    impenv            1.107    0.111    0.907    1.346    0.662    0.629
+    ipeqopt           1.000                               0.599    0.564
+    ipudrst           0.961    0.090    0.799    1.152    0.576    0.526
+    impenv            1.106    0.113    0.908    1.352    0.662    0.628
      Rhat    Prior       
                          
                          
     1.000    normal(0,10)
-    1.001    normal(0,10)
+    1.000    normal(0,10)
 
 Variances:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           0.770    0.046    0.681    0.859    0.770    0.683
-   .ipudrst           0.865    0.047    0.775    0.960    0.865    0.723
-   .impenv            0.671    0.050    0.571    0.768    0.671    0.605
-    Universalism      0.358    0.047    0.270    0.456    1.000    1.000
+   .ipeqopt           0.769    0.046    0.681    0.859    0.769    0.682
+   .ipudrst           0.866    0.046    0.777    0.957    0.866    0.723
+   .impenv            0.671    0.050    0.569    0.766    0.671    0.605
+    Universalism      0.358    0.047    0.272    0.454    1.000    1.000
      Rhat    Prior       
-    1.001 gamma(1,.5)[sd]
     1.000 gamma(1,.5)[sd]
-    1.001 gamma(1,.5)[sd]
-    1.001 gamma(1,.5)[sd]
+    1.000 gamma(1,.5)[sd]
+    1.000 gamma(1,.5)[sd]
+    1.000 gamma(1,.5)[sd]
 
 blavaan (0.4-6) results of 5000 samples after 5000 adapt/burnin iterations
 
   Number of observations                          2671
 
   Statistic                                 MargLogLik         PPP
-  Value                                     -10563.569       0.508
+  Value                                     -10563.545       0.502
 
 Latent Variables:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
   Universalism =~                                                       
     ipeqopt           1.000                               0.487    0.509
-    ipudrst           0.981    0.092    0.811    1.175    0.478    0.542
-    impenv            0.930    0.083    0.777    1.101    0.453    0.475
+    ipudrst           0.982    0.092    0.815    1.179    0.479    0.543
+    impenv            0.930    0.085    0.773    1.108    0.453    0.475
      Rhat    Prior       
                          
                          
@@ -5659,10 +5657,10 @@ Latent Variables:
 
 Variances:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           0.678    0.029    0.620    0.735    0.678    0.741
-   .ipudrst           0.549    0.027    0.494    0.602    0.549    0.706
-   .impenv            0.705    0.028    0.651    0.759    0.705    0.774
-    Universalism      0.237    0.028    0.185    0.296    1.000    1.000
+   .ipeqopt           0.679    0.029    0.621    0.737    0.679    0.741
+   .ipudrst           0.548    0.027    0.493    0.601    0.548    0.705
+   .impenv            0.705    0.028    0.651    0.760    0.705    0.775
+    Universalism      0.237    0.028    0.185    0.297    1.000    1.000
      Rhat    Prior       
     1.000 gamma(1,.5)[sd]
     1.000 gamma(1,.5)[sd]
@@ -5674,84 +5672,84 @@ blavaan (0.4-6) results of 5000 samples after 5000 adapt/burnin iterations
   Number of observations                          1780
 
   Statistic                                 MargLogLik         PPP
-  Value                                      -7736.028       0.489
+  Value                                      -7736.050       0.492
 
 Latent Variables:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
   Universalism =~                                                       
     ipeqopt           1.000                               0.554    0.524
-    ipudrst           1.303    0.161    1.025    1.656    0.722    0.681
-    impenv            0.774    0.077    0.631    0.931    0.429    0.395
+    ipudrst           1.303    0.162    1.028    1.668    0.722    0.681
+    impenv            0.773    0.077    0.630    0.929    0.428    0.395
      Rhat    Prior       
                          
                          
-    1.001    normal(0,10)
+    1.000    normal(0,10)
     1.000    normal(0,10)
 
 Variances:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           0.810    0.046    0.718    0.901    0.810    0.725
-   .ipudrst           0.603    0.066    0.462    0.722    0.603    0.536
-   .impenv            0.993    0.040    0.917    1.074    0.993    0.844
-    Universalism      0.307    0.045    0.225    0.398    1.000    1.000
+   .ipeqopt           0.809    0.046    0.721    0.901    0.809    0.725
+   .ipudrst           0.603    0.065    0.463    0.721    0.603    0.536
+   .impenv            0.992    0.040    0.916    1.072    0.992    0.844
+    Universalism      0.307    0.045    0.223    0.399    1.000    1.000
      Rhat    Prior       
     1.000 gamma(1,.5)[sd]
     1.000 gamma(1,.5)[sd]
-    1.000 gamma(1,.5)[sd]
-    1.001 gamma(1,.5)[sd]</code></pre>
+    1.001 gamma(1,.5)[sd]
+    1.000 gamma(1,.5)[sd]</code></pre>
 <pre><code>$CZ
                      Estimate    Post.SD   pi.lower   pi.upper     Std.lv  
- &quot;   ipeqopt       &quot; &quot;   1.000&quot; &quot;&quot;         &quot;        &quot; &quot;        &quot; &quot;   0.598&quot;
- &quot;   ipudrst       &quot; &quot;   0.963&quot; &quot;   0.092&quot; &quot;   0.796&quot; &quot;   1.156&quot; &quot;   0.576&quot;
- &quot;   impenv        &quot; &quot;   1.107&quot; &quot;   0.111&quot; &quot;   0.907&quot; &quot;   1.346&quot; &quot;   0.662&quot;
- &quot;  .ipeqopt       &quot; &quot;   0.770&quot; &quot;   0.046&quot; &quot;   0.681&quot; &quot;   0.859&quot; &quot;   0.770&quot;
- &quot;  .ipudrst       &quot; &quot;   0.865&quot; &quot;   0.047&quot; &quot;   0.775&quot; &quot;   0.960&quot; &quot;   0.865&quot;
- &quot;  .impenv        &quot; &quot;   0.671&quot; &quot;   0.050&quot; &quot;   0.571&quot; &quot;   0.768&quot; &quot;   0.671&quot;
- &quot;   Universalism  &quot; &quot;   0.358&quot; &quot;   0.047&quot; &quot;   0.270&quot; &quot;   0.456&quot; &quot;   1.000&quot;
+ &quot;   ipeqopt       &quot; &quot;   1.000&quot; &quot;&quot;         &quot;        &quot; &quot;        &quot; &quot;   0.599&quot;
+ &quot;   ipudrst       &quot; &quot;   0.961&quot; &quot;   0.090&quot; &quot;   0.799&quot; &quot;   1.152&quot; &quot;   0.576&quot;
+ &quot;   impenv        &quot; &quot;   1.106&quot; &quot;   0.113&quot; &quot;   0.908&quot; &quot;   1.352&quot; &quot;   0.662&quot;
+ &quot;  .ipeqopt       &quot; &quot;   0.769&quot; &quot;   0.046&quot; &quot;   0.681&quot; &quot;   0.859&quot; &quot;   0.769&quot;
+ &quot;  .ipudrst       &quot; &quot;   0.866&quot; &quot;   0.046&quot; &quot;   0.777&quot; &quot;   0.957&quot; &quot;   0.866&quot;
+ &quot;  .impenv        &quot; &quot;   0.671&quot; &quot;   0.050&quot; &quot;   0.569&quot; &quot;   0.766&quot; &quot;   0.671&quot;
+ &quot;   Universalism  &quot; &quot;   0.358&quot; &quot;   0.047&quot; &quot;   0.272&quot; &quot;   0.454&quot; &quot;   1.000&quot;
   Std.all       Rhat      Prior         
- &quot;   0.563&quot; &quot;        &quot; &quot;               &quot;
+ &quot;   0.564&quot; &quot;        &quot; &quot;               &quot;
  &quot;   0.526&quot; &quot;   1.000&quot; &quot;   normal(0,10)&quot;
- &quot;   0.629&quot; &quot;   1.001&quot; &quot;   normal(0,10)&quot;
- &quot;   0.683&quot; &quot;   1.001&quot; &quot;gamma(1,.5)[sd]&quot;
+ &quot;   0.628&quot; &quot;   1.000&quot; &quot;   normal(0,10)&quot;
+ &quot;   0.682&quot; &quot;   1.000&quot; &quot;gamma(1,.5)[sd]&quot;
  &quot;   0.723&quot; &quot;   1.000&quot; &quot;gamma(1,.5)[sd]&quot;
- &quot;   0.605&quot; &quot;   1.001&quot; &quot;gamma(1,.5)[sd]&quot;
- &quot;   1.000&quot; &quot;   1.001&quot; &quot;gamma(1,.5)[sd]&quot;
+ &quot;   0.605&quot; &quot;   1.000&quot; &quot;gamma(1,.5)[sd]&quot;
+ &quot;   1.000&quot; &quot;   1.000&quot; &quot;gamma(1,.5)[sd]&quot;
 
 $DE
                      Estimate    Post.SD   pi.lower   pi.upper     Std.lv  
  &quot;   ipeqopt       &quot; &quot;   1.000&quot; &quot;&quot;         &quot;        &quot; &quot;        &quot; &quot;   0.487&quot;
- &quot;   ipudrst       &quot; &quot;   0.981&quot; &quot;   0.092&quot; &quot;   0.811&quot; &quot;   1.175&quot; &quot;   0.478&quot;
- &quot;   impenv        &quot; &quot;   0.930&quot; &quot;   0.083&quot; &quot;   0.777&quot; &quot;   1.101&quot; &quot;   0.453&quot;
- &quot;  .ipeqopt       &quot; &quot;   0.678&quot; &quot;   0.029&quot; &quot;   0.620&quot; &quot;   0.735&quot; &quot;   0.678&quot;
- &quot;  .ipudrst       &quot; &quot;   0.549&quot; &quot;   0.027&quot; &quot;   0.494&quot; &quot;   0.602&quot; &quot;   0.549&quot;
- &quot;  .impenv        &quot; &quot;   0.705&quot; &quot;   0.028&quot; &quot;   0.651&quot; &quot;   0.759&quot; &quot;   0.705&quot;
- &quot;   Universalism  &quot; &quot;   0.237&quot; &quot;   0.028&quot; &quot;   0.185&quot; &quot;   0.296&quot; &quot;   1.000&quot;
+ &quot;   ipudrst       &quot; &quot;   0.982&quot; &quot;   0.092&quot; &quot;   0.815&quot; &quot;   1.179&quot; &quot;   0.479&quot;
+ &quot;   impenv        &quot; &quot;   0.930&quot; &quot;   0.085&quot; &quot;   0.773&quot; &quot;   1.108&quot; &quot;   0.453&quot;
+ &quot;  .ipeqopt       &quot; &quot;   0.679&quot; &quot;   0.029&quot; &quot;   0.621&quot; &quot;   0.737&quot; &quot;   0.679&quot;
+ &quot;  .ipudrst       &quot; &quot;   0.548&quot; &quot;   0.027&quot; &quot;   0.493&quot; &quot;   0.601&quot; &quot;   0.548&quot;
+ &quot;  .impenv        &quot; &quot;   0.705&quot; &quot;   0.028&quot; &quot;   0.651&quot; &quot;   0.760&quot; &quot;   0.705&quot;
+ &quot;   Universalism  &quot; &quot;   0.237&quot; &quot;   0.028&quot; &quot;   0.185&quot; &quot;   0.297&quot; &quot;   1.000&quot;
   Std.all       Rhat      Prior         
  &quot;   0.509&quot; &quot;        &quot; &quot;               &quot;
- &quot;   0.542&quot; &quot;   1.000&quot; &quot;   normal(0,10)&quot;
+ &quot;   0.543&quot; &quot;   1.000&quot; &quot;   normal(0,10)&quot;
  &quot;   0.475&quot; &quot;   1.000&quot; &quot;   normal(0,10)&quot;
  &quot;   0.741&quot; &quot;   1.000&quot; &quot;gamma(1,.5)[sd]&quot;
- &quot;   0.706&quot; &quot;   1.000&quot; &quot;gamma(1,.5)[sd]&quot;
- &quot;   0.774&quot; &quot;   1.000&quot; &quot;gamma(1,.5)[sd]&quot;
+ &quot;   0.705&quot; &quot;   1.000&quot; &quot;gamma(1,.5)[sd]&quot;
+ &quot;   0.775&quot; &quot;   1.000&quot; &quot;gamma(1,.5)[sd]&quot;
  &quot;   1.000&quot; &quot;   1.000&quot; &quot;gamma(1,.5)[sd]&quot;
 
 $GB
                      Estimate    Post.SD   pi.lower   pi.upper     Std.lv  
  &quot;   ipeqopt       &quot; &quot;   1.000&quot; &quot;&quot;         &quot;        &quot; &quot;        &quot; &quot;   0.554&quot;
- &quot;   ipudrst       &quot; &quot;   1.303&quot; &quot;   0.161&quot; &quot;   1.025&quot; &quot;   1.656&quot; &quot;   0.722&quot;
- &quot;   impenv        &quot; &quot;   0.774&quot; &quot;   0.077&quot; &quot;   0.631&quot; &quot;   0.931&quot; &quot;   0.429&quot;
- &quot;  .ipeqopt       &quot; &quot;   0.810&quot; &quot;   0.046&quot; &quot;   0.718&quot; &quot;   0.901&quot; &quot;   0.810&quot;
- &quot;  .ipudrst       &quot; &quot;   0.603&quot; &quot;   0.066&quot; &quot;   0.462&quot; &quot;   0.722&quot; &quot;   0.603&quot;
- &quot;  .impenv        &quot; &quot;   0.993&quot; &quot;   0.040&quot; &quot;   0.917&quot; &quot;   1.074&quot; &quot;   0.993&quot;
- &quot;   Universalism  &quot; &quot;   0.307&quot; &quot;   0.045&quot; &quot;   0.225&quot; &quot;   0.398&quot; &quot;   1.000&quot;
+ &quot;   ipudrst       &quot; &quot;   1.303&quot; &quot;   0.162&quot; &quot;   1.028&quot; &quot;   1.668&quot; &quot;   0.722&quot;
+ &quot;   impenv        &quot; &quot;   0.773&quot; &quot;   0.077&quot; &quot;   0.630&quot; &quot;   0.929&quot; &quot;   0.428&quot;
+ &quot;  .ipeqopt       &quot; &quot;   0.809&quot; &quot;   0.046&quot; &quot;   0.721&quot; &quot;   0.901&quot; &quot;   0.809&quot;
+ &quot;  .ipudrst       &quot; &quot;   0.603&quot; &quot;   0.065&quot; &quot;   0.463&quot; &quot;   0.721&quot; &quot;   0.603&quot;
+ &quot;  .impenv        &quot; &quot;   0.992&quot; &quot;   0.040&quot; &quot;   0.916&quot; &quot;   1.072&quot; &quot;   0.992&quot;
+ &quot;   Universalism  &quot; &quot;   0.307&quot; &quot;   0.045&quot; &quot;   0.223&quot; &quot;   0.399&quot; &quot;   1.000&quot;
   Std.all       Rhat      Prior         
  &quot;   0.524&quot; &quot;        &quot; &quot;               &quot;
- &quot;   0.681&quot; &quot;   1.001&quot; &quot;   normal(0,10)&quot;
+ &quot;   0.681&quot; &quot;   1.000&quot; &quot;   normal(0,10)&quot;
  &quot;   0.395&quot; &quot;   1.000&quot; &quot;   normal(0,10)&quot;
  &quot;   0.725&quot; &quot;   1.000&quot; &quot;gamma(1,.5)[sd]&quot;
  &quot;   0.536&quot; &quot;   1.000&quot; &quot;gamma(1,.5)[sd]&quot;
- &quot;   0.844&quot; &quot;   1.000&quot; &quot;gamma(1,.5)[sd]&quot;
- &quot;   1.000&quot; &quot;   1.001&quot; &quot;gamma(1,.5)[sd]&quot;</code></pre>
+ &quot;   0.844&quot; &quot;   1.001&quot; &quot;gamma(1,.5)[sd]&quot;
+ &quot;   1.000&quot; &quot;   1.000&quot; &quot;gamma(1,.5)[sd]&quot;</code></pre>
 </div>
 <div id="configural-model-2" class="section level3">
 <h3>Configural model</h3>
@@ -5770,8 +5768,8 @@ $GB
 <pre><code>
 SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 0.000254 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 2.54 seconds.
+Chain 1: Gradient evaluation took 0.000273 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 2.73 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -5788,9 +5786,222 @@ Chain 1: Iteration: 8000 / 10000 [ 80%]  (Sampling)
 Chain 1: Iteration: 9000 / 10000 [ 90%]  (Sampling)
 Chain 1: Iteration: 10000 / 10000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 72.2602 seconds (Warm-up)
-Chain 1:                70.4974 seconds (Sampling)
-Chain 1:                142.758 seconds (Total)
+Chain 1:  Elapsed Time: 84.5556 seconds (Warm-up)
+Chain 1:                97.2148 seconds (Sampling)
+Chain 1:                181.77 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0.000271 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 2.71 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 10000 [  0%]  (Warmup)
+Chain 2: Iteration: 1000 / 10000 [ 10%]  (Warmup)
+Chain 2: Iteration: 2000 / 10000 [ 20%]  (Warmup)
+Chain 2: Iteration: 3000 / 10000 [ 30%]  (Warmup)
+Chain 2: Iteration: 4000 / 10000 [ 40%]  (Warmup)
+Chain 2: Iteration: 5000 / 10000 [ 50%]  (Warmup)
+Chain 2: Iteration: 5001 / 10000 [ 50%]  (Sampling)
+Chain 2: Iteration: 6000 / 10000 [ 60%]  (Sampling)
+Chain 2: Iteration: 7000 / 10000 [ 70%]  (Sampling)
+Chain 2: Iteration: 8000 / 10000 [ 80%]  (Sampling)
+Chain 2: Iteration: 9000 / 10000 [ 90%]  (Sampling)
+Chain 2: Iteration: 10000 / 10000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 114.743 seconds (Warm-up)
+Chain 2:                105.68 seconds (Sampling)
+Chain 2:                220.423 seconds (Total)
+Chain 2: </code></pre>
+<pre><code>Warning: There were 2 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them.</code></pre>
+<pre><code>Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
+<pre><code>Computing posterior predictives...</code></pre>
+<pre class="r"><code>fitMeasures(universalism_fit_bayes_config)</code></pre>
+<pre><code>Warning: 
+21 (4.2%) p_waic estimates greater than 0.4. We recommend trying loo instead.</code></pre>
+<pre><code>Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
+<pre><code>      npar       logl        ppp        bic        dic      p_dic       waic 
+    27.000  -2133.742      0.375   4435.117   4277.562      5.038   4311.037 
+    p_waic    se_waic      looic      p_loo     se_loo margloglik 
+    36.749     84.228   4311.228     36.845     84.257  -2228.902 </code></pre>
+<pre class="r"><code>summary(
+  object = universalism_fit_bayes_config,
+  fit.measures = T,
+  standardized = T
+  # rsquare = T
+  )</code></pre>
+<pre><code>blavaan (0.4-6) results of 5000 samples after 5000 adapt/burnin iterations
+
+  Number of observations per group         
+  DE                                               239
+  GB                                               129
+  CZ                                               132
+
+  Statistic                                 MargLogLik         PPP
+  Value                                      -2228.902       0.375
+
+
+Group 1 []:
+
+Latent Variables:
+                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
+  Universalism =~                                                       
+    ipeqopt           1.000                               0.394    0.421
+    ipudrst           1.549    1.840    0.226    6.728    0.611    0.638
+    impenv            1.572    1.959    0.230    7.057    0.620    0.589
+     Rhat    Prior       
+                         
+                         
+    1.001    normal(0,10)
+    1.001    normal(0,10)
+
+Intercepts:
+                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
+   .ipeqopt           5.160    0.060    5.043    5.279    5.160    5.505
+   .ipudrst           4.967    0.054    4.859    5.073    4.967    5.192
+   .impenv            5.012    0.060    4.893    5.133    5.012    4.759
+    Universalism      0.000                               0.000    0.000
+     Rhat    Prior       
+    1.000    normal(0,32)
+    1.000    normal(0,32)
+    1.000    normal(0,32)
+                         
+
+Variances:
+                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
+   .ipeqopt           0.723    0.156    0.315    0.962    0.723    0.823
+   .ipudrst           0.542    0.170    0.034    0.764    0.542    0.592
+   .impenv            0.725    0.192    0.124    0.980    0.725    0.653
+    Universalism      0.156    0.149    0.005    0.574    1.000    1.000
+     Rhat    Prior       
+    1.006 gamma(1,.5)[sd]
+    1.000 gamma(1,.5)[sd]
+    1.001 gamma(1,.5)[sd]
+    1.006 gamma(1,.5)[sd]
+
+
+Group 2 []:
+
+Latent Variables:
+                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
+  Universalism =~                                                       
+    ipeqopt           1.000                               0.646    0.558
+    ipudrst           1.566    0.618    0.679    2.989    1.011    0.841
+    impenv            0.860    0.297    0.379    1.537    0.555    0.436
+     Rhat    Prior       
+                         
+                         
+    1.000    normal(0,10)
+    1.000    normal(0,10)
+
+Intercepts:
+                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
+   .ipeqopt           4.891    0.103    4.687    5.094    4.891    4.224
+   .ipudrst           4.743    0.099    4.549    4.937    4.743    3.945
+   .impenv            4.690    0.111    4.470    4.909    4.690    3.683
+    Universalism      0.000                               0.000    0.000
+     Rhat    Prior       
+    1.000    normal(0,32)
+    1.000    normal(0,32)
+    1.000    normal(0,32)
+                         
+
+Variances:
+                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
+   .ipeqopt           0.924    0.203    0.494    1.293    0.924    0.689
+   .ipudrst           0.424    0.268    0.002    0.923    0.424    0.293
+   .impenv            1.313    0.193    0.965    1.723    1.313    0.810
+    Universalism      0.417    0.210    0.121    0.922    1.000    1.000
+     Rhat    Prior       
+    1.001 gamma(1,.5)[sd]
+    1.001 gamma(1,.5)[sd]
+    1.000 gamma(1,.5)[sd]
+    1.001 gamma(1,.5)[sd]
+
+
+Group 3 []:
+
+Latent Variables:
+                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
+  Universalism =~                                                       
+    ipeqopt           1.000                               0.773    0.668
+    ipudrst           0.716    0.315    0.268    1.386    0.553    0.431
+    impenv            1.142    0.603    0.417    2.746    0.883    0.709
+     Rhat    Prior       
+                         
+                         
+    1.001    normal(0,10)
+    1.000    normal(0,10)
+
+Intercepts:
+                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
+   .ipeqopt           4.589    0.101    4.391    4.790    4.589    3.964
+   .ipudrst           4.187    0.109    3.970    4.400    4.187    3.266
+   .impenv            4.590    0.102    4.391    4.796    4.590    3.686
+    Universalism      0.000                               0.000    0.000
+     Rhat    Prior       
+    1.000    normal(0,32)
+    1.000    normal(0,32)
+    1.000    normal(0,32)
+                         
+
+Variances:
+                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
+   .ipeqopt           0.743    0.284    0.063    1.235    0.743    0.554
+   .ipudrst           1.338    0.204    0.970    1.772    1.338    0.814
+   .impenv            0.771    0.299    0.031    1.264    0.771    0.497
+    Universalism      0.597    0.303    0.146    1.324    1.000    1.000
+     Rhat    Prior       
+    1.000 gamma(1,.5)[sd]
+    1.000 gamma(1,.5)[sd]
+    1.000 gamma(1,.5)[sd]
+    1.000 gamma(1,.5)[sd]</code></pre>
+</div>
+<div id="metric-model-2" class="section level3">
+<h3>Metric model</h3>
+<pre class="r"><code>universalism_fit_bayes_metric &lt;- bcfa(
+    model = &quot;Universalism =~ ipeqopt + ipudrst + impenv&quot;, 
+    data = ESS07_sample,
+    # not working
+    # estimator = &quot;MLR&quot;,
+    # missing = &quot;fiml.x&quot;,
+    group=&quot;country&quot;,
+    group.equal = c(&quot;loadings&quot;),
+    wiggle = c(&quot;loadings&quot;),
+    wiggle.sd = 0.05,
+    n.chains = 2,
+    burnin = 5000,
+    sample = 5000,
+    inits = &quot;simple&quot;
+    )</code></pre>
+<pre><code>
+SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0.000247 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 2.47 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 10000 [  0%]  (Warmup)
+Chain 1: Iteration: 1000 / 10000 [ 10%]  (Warmup)
+Chain 1: Iteration: 2000 / 10000 [ 20%]  (Warmup)
+Chain 1: Iteration: 3000 / 10000 [ 30%]  (Warmup)
+Chain 1: Iteration: 4000 / 10000 [ 40%]  (Warmup)
+Chain 1: Iteration: 5000 / 10000 [ 50%]  (Warmup)
+Chain 1: Iteration: 5001 / 10000 [ 50%]  (Sampling)
+Chain 1: Iteration: 6000 / 10000 [ 60%]  (Sampling)
+Chain 1: Iteration: 7000 / 10000 [ 70%]  (Sampling)
+Chain 1: Iteration: 8000 / 10000 [ 80%]  (Sampling)
+Chain 1: Iteration: 9000 / 10000 [ 90%]  (Sampling)
+Chain 1: Iteration: 10000 / 10000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 61.1937 seconds (Warm-up)
+Chain 1:                63.3846 seconds (Sampling)
+Chain 1:                124.578 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 2).
@@ -5813,226 +6024,18 @@ Chain 2: Iteration: 8000 / 10000 [ 80%]  (Sampling)
 Chain 2: Iteration: 9000 / 10000 [ 90%]  (Sampling)
 Chain 2: Iteration: 10000 / 10000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 86.6432 seconds (Warm-up)
-Chain 2:                69.4507 seconds (Sampling)
-Chain 2:                156.094 seconds (Total)
-Chain 2: 
-Computing posterior predictives...</code></pre>
-<pre class="r"><code>fitMeasures(universalism_fit_bayes_config)</code></pre>
-<pre><code>Warning: 
-16 (3.2%) p_waic estimates greater than 0.4. We recommend trying loo instead.</code></pre>
-<pre><code>      npar       logl        ppp        bic        dic      p_dic       waic 
-    27.000  -2091.410      0.385   4350.451   4226.023     21.602   4241.620 
-    p_waic    se_waic      looic      p_loo     se_loo margloglik 
-    35.673     79.469   4241.726     35.726     79.472  -2190.545 </code></pre>
-<pre class="r"><code>summary(
-  object = universalism_fit_bayes_config,
-  fit.measures = T,
-  standardized = T
-  # rsquare = T
-  )</code></pre>
-<pre><code>blavaan (0.4-6) results of 5000 samples after 5000 adapt/burnin iterations
-
-  Number of observations per group         
-  DE                                               219
-  CZ                                               124
-  GB                                               157
-
-  Statistic                                 MargLogLik         PPP
-  Value                                      -2190.545       0.385
-
-
-Group 1 []:
-
-Latent Variables:
-                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-  Universalism =~                                                       
-    ipeqopt           1.000                               0.458    0.452
-    ipudrst           1.537    0.821    0.590    3.732    0.703    0.719
-    impenv            1.008    0.408    0.449    2.067    0.461    0.464
-     Rhat    Prior       
-                         
-                         
-    1.001    normal(0,10)
-    1.001    normal(0,10)
-
-Intercepts:
-                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           5.072    0.069    4.937    5.210    5.072    5.010
-   .ipudrst           4.982    0.061    4.863    5.100    4.982    5.095
-   .impenv            4.994    0.066    4.866    5.124    4.994    5.030
-    Universalism      0.000                               0.000    0.000
-     Rhat    Prior       
-    1.000    normal(0,32)
-    1.000    normal(0,32)
-    1.001    normal(0,32)
-                         
-
-Variances:
-                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           0.816    0.126    0.560    1.056    0.816    0.796
-   .ipudrst           0.462    0.185    0.015    0.744    0.462    0.483
-   .impenv            0.773    0.117    0.540    0.995    0.773    0.784
-    Universalism      0.209    0.116    0.046    0.482    1.000    1.000
-     Rhat    Prior       
-    1.000 gamma(1,.5)[sd]
-    1.001 gamma(1,.5)[sd]
-    1.001 gamma(1,.5)[sd]
-    1.000 gamma(1,.5)[sd]
-
-
-Group 2 []:
-
-Latent Variables:
-                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-  Universalism =~                                                       
-    ipeqopt           1.000                               0.597    0.537
-    ipudrst           1.249    0.822    0.530    3.293    0.745    0.658
-    impenv            1.354    0.743    0.571    3.219    0.808    0.664
-     Rhat    Prior       
-                         
-                         
-    1.002    normal(0,10)
-    1.001    normal(0,10)
-
-Intercepts:
-                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           4.484    0.101    4.285    4.684    4.484    4.036
-   .ipudrst           4.242    0.096    4.054    4.430    4.242    3.744
-   .impenv            4.605    0.104    4.403    4.804    4.605    3.785
-    Universalism      0.000                               0.000    0.000
-     Rhat    Prior       
-    1.000    normal(0,32)
-    1.000    normal(0,32)
-    1.000    normal(0,32)
-                         
-
-Variances:
-                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           0.878    0.189    0.498    1.254    0.878    0.711
-   .ipudrst           0.728    0.216    0.162    1.103    0.728    0.567
-   .impenv            0.827    0.250    0.192    1.269    0.827    0.559
-    Universalism      0.356    0.192    0.057    0.801    1.000    1.000
-     Rhat    Prior       
-    1.000 gamma(1,.5)[sd]
-    1.001 gamma(1,.5)[sd]
-    1.000 gamma(1,.5)[sd]
-    1.000 gamma(1,.5)[sd]
-
-
-Group 3 []:
-
-Latent Variables:
-                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-  Universalism =~                                                       
-    ipeqopt           1.000                               0.757    0.698
-    ipudrst           1.103    0.564    0.422    2.626    0.835    0.686
-    impenv            0.475    0.183    0.184    0.886    0.360    0.385
-     Rhat    Prior       
-                         
-                         
-    1.000    normal(0,10)
-    1.000    normal(0,10)
-
-Intercepts:
-                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           5.038    0.086    4.866    5.205    5.038    4.646
-   .ipudrst           4.713    0.092    4.532    4.895    4.713    3.875
-   .impenv            5.019    0.073    4.873    5.165    5.019    5.374
-    Universalism      0.000                               0.000    0.000
-     Rhat    Prior       
-    1.000    normal(0,32)
-    1.000    normal(0,32)
-    1.000    normal(0,32)
-                         
-
-Variances:
-                   Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           0.603    0.258    0.022    1.041    0.603    0.513
-   .ipudrst           0.782    0.274    0.065    1.218    0.782    0.529
-   .impenv            0.743    0.097    0.568    0.953    0.743    0.852
-    Universalism      0.573    0.274    0.159    1.199    1.000    1.000
-     Rhat    Prior       
-    1.000 gamma(1,.5)[sd]
-    1.000 gamma(1,.5)[sd]
-    1.000 gamma(1,.5)[sd]
-    1.001 gamma(1,.5)[sd]</code></pre>
-</div>
-<div id="metric-model-2" class="section level3">
-<h3>Metric model</h3>
-<pre class="r"><code>universalism_fit_bayes_metric &lt;- bcfa(
-    model = &quot;Universalism =~ ipeqopt + ipudrst + impenv&quot;, 
-    data = ESS07_sample,
-    # not working
-    # estimator = &quot;MLR&quot;,
-    # missing = &quot;fiml.x&quot;,
-    group=&quot;country&quot;,
-    group.equal = c(&quot;loadings&quot;),
-    wiggle = c(&quot;loadings&quot;),
-    wiggle.sd = 0.05,
-    n.chains = 2,
-    burnin = 5000,
-    sample = 5000,
-    inits = &quot;simple&quot;
-    )</code></pre>
-<pre><code>
-SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 1).
-Chain 1: 
-Chain 1: Gradient evaluation took 0.000248 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 2.48 seconds.
-Chain 1: Adjust your expectations accordingly!
-Chain 1: 
-Chain 1: 
-Chain 1: Iteration:    1 / 10000 [  0%]  (Warmup)
-Chain 1: Iteration: 1000 / 10000 [ 10%]  (Warmup)
-Chain 1: Iteration: 2000 / 10000 [ 20%]  (Warmup)
-Chain 1: Iteration: 3000 / 10000 [ 30%]  (Warmup)
-Chain 1: Iteration: 4000 / 10000 [ 40%]  (Warmup)
-Chain 1: Iteration: 5000 / 10000 [ 50%]  (Warmup)
-Chain 1: Iteration: 5001 / 10000 [ 50%]  (Sampling)
-Chain 1: Iteration: 6000 / 10000 [ 60%]  (Sampling)
-Chain 1: Iteration: 7000 / 10000 [ 70%]  (Sampling)
-Chain 1: Iteration: 8000 / 10000 [ 80%]  (Sampling)
-Chain 1: Iteration: 9000 / 10000 [ 90%]  (Sampling)
-Chain 1: Iteration: 10000 / 10000 [100%]  (Sampling)
-Chain 1: 
-Chain 1:  Elapsed Time: 57.5172 seconds (Warm-up)
-Chain 1:                66.5758 seconds (Sampling)
-Chain 1:                124.093 seconds (Total)
-Chain 1: 
-
-SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 2).
-Chain 2: 
-Chain 2: Gradient evaluation took 0.000362 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 3.62 seconds.
-Chain 2: Adjust your expectations accordingly!
-Chain 2: 
-Chain 2: 
-Chain 2: Iteration:    1 / 10000 [  0%]  (Warmup)
-Chain 2: Iteration: 1000 / 10000 [ 10%]  (Warmup)
-Chain 2: Iteration: 2000 / 10000 [ 20%]  (Warmup)
-Chain 2: Iteration: 3000 / 10000 [ 30%]  (Warmup)
-Chain 2: Iteration: 4000 / 10000 [ 40%]  (Warmup)
-Chain 2: Iteration: 5000 / 10000 [ 50%]  (Warmup)
-Chain 2: Iteration: 5001 / 10000 [ 50%]  (Sampling)
-Chain 2: Iteration: 6000 / 10000 [ 60%]  (Sampling)
-Chain 2: Iteration: 7000 / 10000 [ 70%]  (Sampling)
-Chain 2: Iteration: 8000 / 10000 [ 80%]  (Sampling)
-Chain 2: Iteration: 9000 / 10000 [ 90%]  (Sampling)
-Chain 2: Iteration: 10000 / 10000 [100%]  (Sampling)
-Chain 2: 
-Chain 2:  Elapsed Time: 58.5115 seconds (Warm-up)
-Chain 2:                65.4266 seconds (Sampling)
-Chain 2:                123.938 seconds (Total)
+Chain 2:  Elapsed Time: 58.4424 seconds (Warm-up)
+Chain 2:                60.8283 seconds (Sampling)
+Chain 2:                119.271 seconds (Total)
 Chain 2: 
 Computing posterior predictives...</code></pre>
 <pre class="r"><code>fitMeasures(universalism_fit_bayes_metric)</code></pre>
 <pre><code>Warning: 
-15 (3.0%) p_waic estimates greater than 0.4. We recommend trying loo instead.</code></pre>
+18 (3.6%) p_waic estimates greater than 0.4. We recommend trying loo instead.</code></pre>
 <pre><code>      npar       logl        ppp        bic        dic      p_dic       waic 
-    23.000  -2089.597      0.470   4321.991   4224.798     22.802   4233.036 
+    23.000  -2122.638      0.531   4388.073   4291.407     23.066   4301.529 
     p_waic    se_waic      looic      p_loo     se_loo margloglik 
-    29.871     78.310   4233.171     29.939     78.329  -2180.567 </code></pre>
+    31.828     84.785   4301.752     31.940     84.827  -2212.274 </code></pre>
 <pre class="r"><code>summary(
   object = universalism_fit_bayes_metric,
   fit.measures = T,
@@ -6042,12 +6045,12 @@ Computing posterior predictives...</code></pre>
 <pre><code>blavaan (0.4-6) results of 5000 samples after 5000 adapt/burnin iterations
 
   Number of observations per group         
-  DE                                               219
-  CZ                                               124
-  GB                                               157
+  DE                                               239
+  GB                                               129
+  CZ                                               132
 
   Statistic                                 MargLogLik         PPP
-  Value                                      -2180.567       0.470
+  Value                                      -2212.274       0.531
 
 
 Group 1 []:
@@ -6055,20 +6058,20 @@ Group 1 []:
 Latent Variables:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
   Universalism =~                                                       
-    ipeqopt           1.000                               0.568    0.555
-    ipudrst (.p2.)    0.960    0.214    0.600    1.438    0.546    0.591
-    impenv  (.p3.)    0.709    0.141    0.450    1.008    0.403    0.414
+    ipeqopt           1.000                               0.455    0.485
+    ipudrst (.p2.)    0.816    0.192    0.469    1.222    0.371    0.438
+    impenv  (.p3.)    0.784    0.176    0.450    1.145    0.357    0.375
      Rhat    Prior                  
                                     
                                     
-    1.002               normal(0,10)
     1.000               normal(0,10)
+    1.001               normal(0,10)
 
 Intercepts:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           5.073    0.068    4.940    5.206    5.073    4.952
-   .ipudrst           4.982    0.062    4.861    5.103    4.982    5.396
-   .impenv            4.996    0.066    4.866    5.125    4.996    5.133
+   .ipeqopt           5.160    0.060    5.041    5.279    5.160    5.498
+   .ipudrst           4.967    0.056    4.858    5.076    4.967    5.856
+   .impenv            5.013    0.062    4.892    5.134    5.013    5.271
     Universalism      0.000                               0.000    0.000
      Rhat    Prior                  
     1.000               normal(0,32)
@@ -6078,15 +6081,15 @@ Intercepts:
 
 Variances:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           0.726    0.111    0.508    0.945    0.726    0.692
-   .ipudrst           0.555    0.094    0.368    0.739    0.555    0.650
-   .impenv            0.785    0.091    0.621    0.977    0.785    0.829
-    Universalism      0.323    0.096    0.166    0.541    1.000    1.000
+   .ipeqopt           0.673    0.098    0.472    0.860    0.673    0.765
+   .ipudrst           0.581    0.069    0.450    0.724    0.581    0.808
+   .impenv            0.777    0.085    0.620    0.957    0.777    0.859
+    Universalism      0.207    0.079    0.088    0.393    1.000    1.000
      Rhat    Prior                  
-    1.000            gamma(1,.5)[sd]
     1.001            gamma(1,.5)[sd]
     1.000            gamma(1,.5)[sd]
-    1.001            gamma(1,.5)[sd]
+    1.000            gamma(1,.5)[sd]
+    1.000            gamma(1,.5)[sd]
 
 
 Group 2 []:
@@ -6094,20 +6097,20 @@ Group 2 []:
 Latent Variables:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
   Universalism =~                                                       
-    ipeqopt           1.000                               0.727    0.642
-    ipudrst (.p2.)    0.953    0.219    0.590    1.448    0.693    0.635
-    impenv  (.p3.)    0.723    0.143    0.460    1.031    0.526    0.467
+    ipeqopt           1.000                               0.822    0.698
+    ipudrst (.p2.)    0.831    0.191    0.481    1.239    0.683    0.618
+    impenv  (.p3.)    0.776    0.178    0.436    1.145    0.638    0.496
      Rhat    Prior                  
                                     
                                     
-    1.002 normal(lambda[1,2,1],0.05)
-    1.000 normal(lambda[1,3,1],0.05)
+    1.000 normal(lambda[1,2,1],0.05)
+    1.001 normal(lambda[1,3,1],0.05)
 
 Intercepts:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           4.485    0.100    4.290    4.683    4.485    3.960
-   .ipudrst           4.243    0.096    4.054    4.431    4.243    3.886
-   .impenv            4.606    0.099    4.411    4.803    4.606    4.088
+   .ipeqopt           4.890    0.103    4.688    5.090    4.890    4.156
+   .ipudrst           4.741    0.096    4.557    4.931    4.741    4.294
+   .impenv            4.689    0.112    4.469    4.909    4.689    3.650
     Universalism      0.000                               0.000    0.000
      Rhat    Prior                  
     1.000               normal(0,32)
@@ -6117,13 +6120,13 @@ Intercepts:
 
 Variances:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           0.754    0.171    0.411    1.096    0.754    0.588
-   .ipudrst           0.712    0.154    0.414    1.023    0.712    0.597
-   .impenv            0.993    0.153    0.722    1.323    0.993    0.782
-    Universalism      0.529    0.167    0.262    0.915    1.000    1.000
+   .ipeqopt           0.709    0.199    0.270    1.073    0.709    0.512
+   .ipudrst           0.753    0.154    0.464    1.073    0.753    0.618
+   .impenv            1.245    0.191    0.907    1.656    1.245    0.754
+    Universalism      0.675    0.211    0.347    1.181    1.000    1.000
      Rhat    Prior                  
-    1.000            gamma(1,.5)[sd]
     1.001            gamma(1,.5)[sd]
+    1.000            gamma(1,.5)[sd]
     1.000            gamma(1,.5)[sd]
     1.000            gamma(1,.5)[sd]
 
@@ -6133,20 +6136,20 @@ Group 3 []:
 Latent Variables:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
   Universalism =~                                                       
-    ipeqopt           1.000                               0.701    0.652
-    ipudrst (.p2.)    0.965    0.215    0.602    1.441    0.676    0.585
-    impenv  (.p3.)    0.688    0.146    0.418    0.998    0.482    0.503
+    ipeqopt           1.000                               0.818    0.704
+    ipudrst (.p2.)    0.804    0.194    0.448    1.217    0.657    0.506
+    impenv  (.p3.)    0.793    0.176    0.463    1.161    0.648    0.556
      Rhat    Prior                  
                                     
                                     
-    1.001 normal(lambda[1,2,1],0.05)
-    1.000 normal(lambda[1,3,1],0.05)
+    1.000 normal(lambda[1,2,1],0.05)
+    1.001 normal(lambda[1,3,1],0.05)
 
 Intercepts:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           5.040    0.085    4.875    5.206    5.040    4.688
-   .ipudrst           4.715    0.091    4.536    4.892    4.715    4.082
-   .impenv            5.020    0.077    4.867    5.171    5.020    5.238
+   .ipeqopt           4.594    0.101    4.395    4.791    4.594    3.955
+   .ipudrst           4.189    0.111    3.971    4.404    4.189    3.223
+   .impenv            4.592    0.100    4.394    4.792    4.592    3.941
     Universalism      0.000                               0.000    0.000
      Rhat    Prior                  
     1.000               normal(0,32)
@@ -6156,10 +6159,10 @@ Intercepts:
 
 Variances:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           0.665    0.153    0.354    0.957    0.665    0.575
-   .ipudrst           0.877    0.151    0.588    1.179    0.877    0.657
-   .impenv            0.686    0.096    0.512    0.891    0.686    0.747
-    Universalism      0.491    0.159    0.240    0.859    1.000    1.000
+   .ipeqopt           0.680    0.206    0.215    1.072    0.680    0.504
+   .ipudrst           1.257    0.201    0.902    1.702    1.257    0.744
+   .impenv            0.938    0.160    0.641    1.273    0.938    0.691
+    Universalism      0.668    0.219    0.329    1.205    1.000    1.000
      Rhat    Prior                  
     1.000            gamma(1,.5)[sd]
     1.000            gamma(1,.5)[sd]
@@ -6186,8 +6189,8 @@ Variances:
 <pre><code>
 SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 0.000316 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 3.16 seconds.
+Chain 1: Gradient evaluation took 0.000256 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 2.56 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -6204,15 +6207,15 @@ Chain 1: Iteration: 8000 / 10000 [ 80%]  (Sampling)
 Chain 1: Iteration: 9000 / 10000 [ 90%]  (Sampling)
 Chain 1: Iteration: 10000 / 10000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 58.361 seconds (Warm-up)
-Chain 1:                65.9377 seconds (Sampling)
-Chain 1:                124.299 seconds (Total)
+Chain 1:  Elapsed Time: 56.4118 seconds (Warm-up)
+Chain 1:                66.577 seconds (Sampling)
+Chain 1:                122.989 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;stanmarg&#39; NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 0.000289 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 2.89 seconds.
+Chain 2: Gradient evaluation took 0.000256 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 2.56 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -6229,18 +6232,18 @@ Chain 2: Iteration: 8000 / 10000 [ 80%]  (Sampling)
 Chain 2: Iteration: 9000 / 10000 [ 90%]  (Sampling)
 Chain 2: Iteration: 10000 / 10000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 57.9794 seconds (Warm-up)
-Chain 2:                64.8051 seconds (Sampling)
-Chain 2:                122.784 seconds (Total)
+Chain 2:  Elapsed Time: 57.7121 seconds (Warm-up)
+Chain 2:                65.8357 seconds (Sampling)
+Chain 2:                123.548 seconds (Total)
 Chain 2: 
 Computing posterior predictives...</code></pre>
 <pre class="r"><code>fitMeasures(universalism_fit_bayes_scalar)</code></pre>
 <pre><code>Warning: 
-11 (2.2%) p_waic estimates greater than 0.4. We recommend trying loo instead.</code></pre>
+15 (3.0%) p_waic estimates greater than 0.4. We recommend trying loo instead.</code></pre>
 <pre><code>      npar       logl        ppp        bic        dic      p_dic       waic 
-    19.000  -2091.434      0.443   4300.831   4222.150     19.641   4229.973 
+    19.000  -2125.050      0.466   4368.063   4289.095     19.498   4299.257 
     p_waic    se_waic      looic      p_loo     se_loo margloglik 
-    26.455     78.655   4230.155     26.546     78.685  -2157.780 </code></pre>
+    28.438     84.902   4299.418     28.519     84.926  -2190.769 </code></pre>
 <pre class="r"><code>summary(
   object = universalism_fit_bayes_scalar,
   fit.measures = T,
@@ -6250,12 +6253,12 @@ Computing posterior predictives...</code></pre>
 <pre><code>blavaan (0.4-6) results of 5000 samples after 5000 adapt/burnin iterations
 
   Number of observations per group         
-  DE                                               219
-  CZ                                               124
-  GB                                               157
+  DE                                               239
+  GB                                               129
+  CZ                                               132
 
   Statistic                                 MargLogLik         PPP
-  Value                                      -2157.780       0.443
+  Value                                      -2190.769       0.466
 
 
 Group 1 []:
@@ -6263,33 +6266,33 @@ Group 1 []:
 Latent Variables:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
   Universalism =~                                                       
-    ipeqopt           1.000                               0.546    0.533
-    ipudrst (.p2.)    1.042    0.172    0.747    1.429    0.569    0.615
-    impenv  (.p3.)    0.704    0.114    0.497    0.943    0.384    0.397
+    ipeqopt           1.000                               0.418    0.446
+    ipudrst (.p2.)    0.971    0.170    0.675    1.346    0.406    0.478
+    impenv  (.p3.)    0.803    0.128    0.567    1.067    0.336    0.354
      Rhat    Prior                  
                                     
                                     
-    1.001               normal(0,10)
-    1.001               normal(0,10)
+    1.000               normal(0,10)
+    1.000               normal(0,10)
 
 Intercepts:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt (.p8.)    5.103    0.063    4.981    5.225    5.103    4.989
-   .ipudrst (.p9.)    4.936    0.061    4.817    5.058    4.936    5.338
-   .impenv  (.10.)    5.035    0.055    4.928    5.141    5.035    5.196
+   .ipeqopt (.p8.)    5.172    0.056    5.063    5.283    5.172    5.517
+   .ipudrst (.p9.)    4.951    0.053    4.846    5.055    4.951    5.831
+   .impenv  (.10.)    5.011    0.055    4.903    5.120    5.011    5.291
     Unvrsls           0.000                               0.000    0.000
      Rhat    Prior                  
-    1.000               normal(0,32)
-    1.000               normal(0,32)
     1.001               normal(0,32)
+    1.000               normal(0,32)
+    1.000               normal(0,32)
                                     
 
 Variances:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           0.749    0.098    0.571    0.950    0.749    0.716
-   .ipudrst           0.532    0.090    0.355    0.708    0.532    0.622
-   .impenv            0.791    0.086    0.637    0.973    0.791    0.843
-    Universalism      0.298    0.077    0.169    0.471    1.000    1.000
+   .ipeqopt           0.704    0.085    0.548    0.879    0.704    0.801
+   .ipudrst           0.556    0.070    0.425    0.705    0.556    0.772
+   .impenv            0.784    0.082    0.637    0.958    0.784    0.874
+    Universalism      0.175    0.056    0.081    0.298    1.000    1.000
      Rhat    Prior                  
     1.000            gamma(1,.5)[sd]
     1.000            gamma(1,.5)[sd]
@@ -6302,36 +6305,36 @@ Group 2 []:
 Latent Variables:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
   Universalism =~                                                       
-    ipeqopt           1.000                               0.697    0.616
-    ipudrst (.p2.)    1.041    0.170    0.755    1.418    0.725    0.663
-    impenv  (.p3.)    0.718    0.114    0.507    0.956    0.500    0.447
+    ipeqopt           1.000                               0.772    0.659
+    ipudrst (.p2.)    0.972    0.171    0.669    1.356    0.751    0.674
+    impenv  (.p3.)    0.802    0.131    0.559    1.075    0.619    0.486
      Rhat    Prior                  
                                     
                                     
-    1.001 normal(lambda[1,2,1],0.05)
-    1.001 normal(lambda[1,3,1],0.05)
+    1.000 normal(lambda[1,2,1],0.05)
+    1.000 normal(lambda[1,3,1],0.05)
 
 Intercepts:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt (.p8.)    5.109    0.077    4.962    5.262    5.109    4.511
-   .ipudrst (.p9.)    4.924    0.077    4.774    5.075    4.924    4.502
-   .impenv  (.10.)    5.040    0.069    4.904    5.173    5.040    4.505
-    Unvrsls          -0.636    0.111   -0.858   -0.425   -0.912   -0.912
+   .ipeqopt (.p8.)    5.170    0.069    5.037    5.307    5.170    4.409
+   .ipudrst (.p9.)    4.970    0.066    4.841    5.101    4.970    4.460
+   .impenv  (.10.)    4.990    0.069    4.859    5.129    4.990    3.913
+    Unvrsls          -0.273    0.102   -0.479   -0.077   -0.354   -0.354
      Rhat    Prior                  
-    1.000     normal(nu[1,1,1],0.05)
+    1.001     normal(nu[1,1,1],0.05)
     1.000     normal(nu[1,2,1],0.05)
-    1.001     normal(nu[1,3,1],0.05)
-    1.001               normal(0,10)
+    1.000     normal(nu[1,3,1],0.05)
+    1.000               normal(0,10)
 
 Variances:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           0.797    0.150    0.524    1.111    0.797    0.621
-   .ipudrst           0.670    0.148    0.387    0.980    0.670    0.560
-   .impenv            1.001    0.150    0.741    1.332    1.001    0.800
-    Universalism      0.486    0.135    0.263    0.795    1.000    1.000
+   .ipeqopt           0.778    0.159    0.477    1.106    0.778    0.566
+   .ipudrst           0.678    0.149    0.393    0.982    0.678    0.546
+   .impenv            1.243    0.184    0.920    1.641    1.243    0.764
+    Universalism      0.596    0.159    0.335    0.950    1.000    1.000
      Rhat    Prior                  
     1.000            gamma(1,.5)[sd]
-    1.001            gamma(1,.5)[sd]
+    1.000            gamma(1,.5)[sd]
     1.000            gamma(1,.5)[sd]
     1.000            gamma(1,.5)[sd]
 
@@ -6341,38 +6344,38 @@ Group 3 []:
 Latent Variables:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
   Universalism =~                                                       
-    ipeqopt           1.000                               0.679    0.633
-    ipudrst (.p2.)    1.046    0.175    0.743    1.435    0.710    0.612
-    impenv  (.p3.)    0.683    0.120    0.466    0.934    0.464    0.488
+    ipeqopt           1.000                               0.753    0.653
+    ipudrst (.p2.)    0.975    0.168    0.679    1.351    0.734    0.555
+    impenv  (.p3.)    0.802    0.126    0.569    1.066    0.604    0.524
      Rhat    Prior                  
                                     
                                     
-    1.001 normal(lambda[1,2,1],0.05)
-    1.001 normal(lambda[1,3,1],0.05)
+    1.000 normal(lambda[1,2,1],0.05)
+    1.000 normal(lambda[1,3,1],0.05)
 
 Intercepts:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt (.p8.)    5.121    0.073    4.982    5.264    5.121    4.771
-   .ipudrst (.p9.)    4.904    0.073    4.760    5.051    4.904    4.224
-   .impenv  (.10.)    5.057    0.062    4.935    5.179    5.057    5.314
-    Unvrsls          -0.114    0.092   -0.298    0.065   -0.167   -0.167
+   .ipeqopt (.p8.)    5.186    0.071    5.047    5.327    5.186    4.495
+   .ipudrst (.p9.)    4.917    0.071    4.778    5.057    4.917    3.719
+   .impenv  (.10.)    5.031    0.069    4.897    5.168    5.031    4.370
+    Unvrsls          -0.626    0.107   -0.843   -0.420   -0.831   -0.831
      Rhat    Prior                  
-    1.001     normal(nu[1,1,1],0.05)
-    1.000     normal(nu[1,2,1],0.05)
+    1.000     normal(nu[1,1,1],0.05)
+    1.001     normal(nu[1,2,1],0.05)
     1.000     normal(nu[1,3,1],0.05)
-    1.001               normal(0,10)
+    1.000               normal(0,10)
 
 Variances:
                    Estimate  Post.SD pi.lower pi.upper   Std.lv  Std.all
-   .ipeqopt           0.690    0.130    0.442    0.963    0.690    0.599
-   .ipudrst           0.843    0.145    0.575    1.142    0.843    0.626
-   .impenv            0.690    0.094    0.522    0.890    0.690    0.762
-    Universalism      0.462    0.128    0.250    0.752    1.000    1.000
+   .ipeqopt           0.764    0.162    0.456    1.097    0.764    0.574
+   .ipudrst           1.209    0.201    0.852    1.638    1.209    0.692
+   .impenv            0.961    0.151    0.693    1.290    0.961    0.725
+    Universalism      0.567    0.160    0.298    0.923    1.000    1.000
      Rhat    Prior                  
-    1.001            gamma(1,.5)[sd]
     1.000            gamma(1,.5)[sd]
     1.000            gamma(1,.5)[sd]
-    1.001            gamma(1,.5)[sd]</code></pre>
+    1.000            gamma(1,.5)[sd]
+    1.000            gamma(1,.5)[sd]</code></pre>
 </div>
 </div>
 </div>
